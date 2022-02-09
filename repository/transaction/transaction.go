@@ -3,19 +3,20 @@ package transaction
 import (
 	"errors"
 	"fmt"
-	"github.com/xendit/xendit-go"
-	"github.com/xendit/xendit-go/invoice"
 	"gorm.io/gorm"
 	"petshop/entity"
-
-	"petshop/preference"
 )
 
 type Transaction interface {
 	Transaction(newTransactions entity.Transaction) (entity.Transaction, error)
 	TransactionDetail(newDetailTransactions entity.TransactionDetail) (entity.TransactionDetail, error)
 	GroomingStatusHelper(petID int, transactionDetailID uint) error
-	TransactionHelper(request []entity.TransactionDetail, userID int) (*xendit.Invoice, error)
+	PetValidator(petID int, userID int) error
+	GetProductByID(productID int) (entity.Product, error)
+	GetCategoryByID(categoryID int) (entity.Category, error)
+	GetUserByID(userID int) (entity.User, error)
+	Callback(callback entity.Transaction) error
+	UpdateStock(productID, stock int) error
 }
 
 type transactionRepository struct {
@@ -44,25 +45,32 @@ func (tr *transactionRepository) TransactionDetail(newDetailTransactions entity.
 	return newDetailTransactions, nil
 }
 
-func (tr *transactionRepository) Callback(callback entity.Transaction, invoiceID string) error {
+func (tr *transactionRepository) Callback(callback entity.Transaction) error {
 
 	var callbackData entity.Transaction
-	err := tr.db.Where("invoice_id = ?", invoiceID).Model(&callbackData).Update(
-		"payment_status", callback.PaymentStatus,
-	).Error
+	err := tr.db.Where("invoice_id = ?", callback.InvoiceID).Model(&callbackData).Updates(callback).Error
 
 	if err != nil || callbackData.PaymentStatus != callback.PaymentStatus {
 		return err
 	}
 
 	if callbackData.PaymentStatus == "EXPIRED" {
+
+		var transaction entity.Transaction
 		var transactionDetail []entity.TransactionDetail
-
-		err = tr.db.Where("transaction_id = ?", invoiceID).Find(&transactionDetail).Error
-
-		if err != nil || len(transactionDetail) == 0 {
+		err = tr.db.Where("invoice_id = ?", callback.InvoiceID).First(&transaction).Error
+		fmt.Println("ini transaction", transaction)
+		if err != nil {
 			return err
 		}
+
+		err = tr.db.Where("transaction_id = ?", transaction.ID).Find(&transactionDetail).Error
+
+		if err != nil || len(transactionDetail) == 0 {
+			return errors.New("error")
+		}
+
+		fmt.Println("ini detail", transactionDetail)
 
 		for i := 0; i < len(transactionDetail); i++ {
 			var product entity.Product
@@ -84,6 +92,7 @@ func (tr *transactionRepository) Callback(callback entity.Transaction, invoiceID
 	return nil
 }
 
+//transaction helper
 func (tr *transactionRepository) GroomingStatusHelper(petID int, transactionDetailID uint) error {
 	var groomingStatus entity.GroomingStatus
 	groomingStatus = entity.GroomingStatus{
@@ -98,98 +107,54 @@ func (tr *transactionRepository) GroomingStatusHelper(petID int, transactionDeta
 
 	return nil
 }
+func (tr *transactionRepository) PetValidator(petID int, userID int) error {
+	var pet entity.Pet
+	err := tr.db.Where("id = ? And user_id = ?", petID, userID).First(&pet).Error
 
-func (tr *transactionRepository) TransactionHelper(
-	request []entity.TransactionDetail, userID int,
-) (*xendit.Invoice, error) {
+	if err != nil {
+		return err
+	}
 
-	var invoiceData *xendit.Invoice
+	return nil
+}
+func (tr *transactionRepository) GetProductByID(productID int) (entity.Product, error) {
+	var product entity.Product
+	err := tr.db.Where("id = ?", productID).First(&product).Error
 
-	/// Customer
-	var customer xendit.InvoiceCustomer
+	if err != nil {
+		return product, err
+	}
+
+	return product, nil
+}
+func (tr *transactionRepository) GetCategoryByID(categoryID int) (entity.Category, error) {
+	var category entity.Category
+	err := tr.db.Where("id = ?", categoryID).First(&category).Error
+
+	if err != nil {
+		return category, err
+	}
+
+	return category, nil
+}
+func (tr *transactionRepository) GetUserByID(userID int) (entity.User, error) {
 	var user entity.User
-
 	err := tr.db.Where("id = ?", userID).First(&user).Error
-	if err != nil {
-		return invoiceData, err
-	}
-
-	customer.GivenNames = user.Name
-	customer.Email = user.Email
-
-	//Amount
-	amount := 0
-	//category
-	category := ""
-
-	//item
-	var item = xendit.InvoiceItem{}
-	var items = []xendit.InvoiceItem{}
-
-	for i := 0; i < len(request); i++ {
-
-		//Find product
-		var product []entity.Product
-
-		err = tr.db.Where("id = ?", request[i].ProductID).Find(&product).Error
-		if err != nil && len(product) == 0 {
-			return invoiceData, err
-		}
-
-		//Check Stock
-
-		if request[i].Quantity > product[i].Stock {
-			return invoiceData, err
-		}
-
-		//Find Product Category
-		var categoryData entity.Category
-		err = tr.db.Where("id = ?", product[i].CategoryID).First(&categoryData).Error
-		if err != nil {
-			return invoiceData, err
-		}
-		category = categoryData.Name
-
-		//sub stock
-		if category != "Grooming" {
-			newStock := product[i].Stock - request[i].Quantity
-			err = tr.db.Where("id = ?", request[i].ProductID).Model(&product).Update("stock", newStock).Error
-
-			if err != nil {
-				return invoiceData, err
-			}
-		}
-
-		//count amount
-
-		//item
-		item = xendit.InvoiceItem{
-			Name:     product[i].Name,
-			Price:    float64(product[i].Price),
-			Quantity: product[i].Price,
-			Category: category,
-		}
-		items = append(items, item)
-	}
-
-	//InvoiceID generator
-
-	data := invoice.CreateParams{
-		ExternalID:                     ExternalID,
-		Amount:                         float64(amount),
-		PayerEmail:                     user.Email,
-		CustomerNotificationPreference: preference.SendNotifWith,
-		ShouldSendEmail:                &preference.SendEmail,
-		Items:                          items,
-		Customer:                       customer,
-	}
-
-	resp, err := invoice.Create(&data)
 
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
-	return resp, nil
+	return user, nil
+}
+func (tr *transactionRepository) UpdateStock(productID, stock int) error {
+	var product entity.Product
 
+	err := tr.db.Where("id = ?", productID).Model(&product).Update("stock", stock).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
