@@ -1,25 +1,30 @@
 package route
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"petshop/constant"
 	"petshop/delivery/controller/category"
+	"petshop/delivery/controller/city"
 	"petshop/delivery/controller/product"
 	"petshop/delivery/controller/transaction"
 	"petshop/delivery/controller/user"
 	mw "petshop/delivery/middleware"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func RegisterPath(
-	e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController,
-	categoryCtrl *category.CategoryController, tc *transaction.TransactionController,
-) {
+func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController, categoryCtrl *category.CategoryController, tc *transaction.TransactionController, cityCtrl *city.CityController) {
 	eAuth := e.Group("")
 	eAuth.Use(middleware.JWT([]byte(constant.SecretKey)))
 	eAuthAdmin := eAuth.Group("")
 	eAuthAdmin.Use(mw.IsAdmin)
 
+	// City Route Path
+	eAuthAdmin.POST("/city", cityCtrl.CreateCity())
+	eAuthAdmin.GET("/cities", cityCtrl.GetAllCity())
+	eAuthAdmin.GET("/city/profile/:id", cityCtrl.GetCityProfile())
+	eAuthAdmin.PUT("/city/profile/:id", cityCtrl.UpdateCityProfile())
+	eAuthAdmin.DELETE("/city/:id", cityCtrl.DeleteCity())
 	// User Route Path
 	e.POST("/user/register", userCtrl.Register())
 	e.POST("/user/login", userCtrl.Login())
