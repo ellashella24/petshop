@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"petshop/config"
+	productController "petshop/delivery/controller/product"
 	userCtrl "petshop/delivery/controller/user"
 	"petshop/delivery/middleware"
 	"petshop/delivery/route"
+	productRepo "petshop/repository/product"
 	userRepo "petshop/repository/user"
 	"petshop/util"
 
@@ -33,7 +35,10 @@ func main() {
 	userRepository := userRepo.NewUserRepository(db)
 	userController := userCtrl.NewUserController(userRepository)
 
-	route.RegisterPath(e, userController)
+	productRepo := productRepo.NewProductRepository(db)
+	productController := productController.NewProductController(productRepo)
+
+	route.RegisterPath(e, userController, productController)
 
 	fmt.Println(db)
 
