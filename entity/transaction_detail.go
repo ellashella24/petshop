@@ -7,6 +7,6 @@ type TransactionDetail struct {
 	ID             uint
 	TransactionID  uint
 	ProductID      uint
-	Quantity       uint
+	Quantity       int
 	GroomingStatus GroomingStatus
 }
