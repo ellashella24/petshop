@@ -108,7 +108,7 @@ func (cc *CityController) UpdateCityProfile() echo.HandlerFunc {
 		res, err := cc.cityRepo.UpdateCity(cityID, updatedCity)
 
 		if err != nil || res.Name == "" {
-			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't update store"))
+			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't update city"))
 		}
 
 		response := CityFormatResponse{}
@@ -123,7 +123,7 @@ func (cc *CityController) DeleteCity() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cityID, _ := strconv.Atoi(c.Param("id"))
 
-		_, err := cc.cityRepo.DeletecCity(cityID)
+		_, err := cc.cityRepo.DeleteCity(cityID)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't delete city"))
