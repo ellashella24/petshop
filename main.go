@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"petshop/config"
+	userCtrl "petshop/delivery/controller/user"
 	"petshop/delivery/middleware"
+	"petshop/delivery/route"
+	userRepo "petshop/repository/user"
 	"petshop/util"
 
 	"github.com/go-playground/validator/v10"
@@ -24,6 +27,13 @@ func main() {
 	e := echo.New()
 
 	middleware.LogMiddleware(e)
+
+	e.Validator = &CustomValidator{validator: validator.New()}
+
+	userRepository := userRepo.NewUserRepository(db)
+	userController := userCtrl.NewUserController(userRepository)
+
+	route.RegisterPath(e, userController)
 
 	fmt.Println(db)
 
