@@ -5,10 +5,12 @@ import (
 	"petshop/config"
 	productController "petshop/delivery/controller/product"
 	userCtrl "petshop/delivery/controller/user"
+  categoryCtrl "petshop/delivery/controller/category"
 	"petshop/delivery/middleware"
 	"petshop/delivery/route"
 	productRepo "petshop/repository/product"
 	userRepo "petshop/repository/user"
+  categoryRepo "petshop/repository/category"
 	"petshop/util"
 
 	"github.com/go-playground/validator/v10"
@@ -34,11 +36,14 @@ func main() {
 
 	userRepository := userRepo.NewUserRepository(db)
 	userController := userCtrl.NewUserController(userRepository)
+  
+  categoryRepository := categoryRepo.NewCategoryRepository(db)
+	categoryController := categoryCtrl.NewCategoryController(categoryRepository)
 
 	productRepo := productRepo.NewProductRepository(db)
 	productController := productController.NewProductController(productRepo)
 
-	route.RegisterPath(e, userController, productController)
+	route.RegisterPath(e, userController, productController, categoryController)
 
 	fmt.Println(db)
 
