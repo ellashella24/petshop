@@ -3,10 +3,14 @@ package main
 import (
 	"fmt"
 	"petshop/config"
-	categoryCtrl "petshop/delivery/controller/category"
+	productController "petshop/delivery/controller/product"
+	userCtrl "petshop/delivery/controller/user"
+  categoryCtrl "petshop/delivery/controller/category"
 	"petshop/delivery/middleware"
 	"petshop/delivery/route"
-	categoryRepo "petshop/repository/category"
+	productRepo "petshop/repository/product"
+	userRepo "petshop/repository/user"
+  categoryRepo "petshop/repository/category"
 	"petshop/util"
 
 	"github.com/go-playground/validator/v10"
@@ -30,10 +34,16 @@ func main() {
 
 	e.Validator = &CustomValidator{validator: validator.New()}
 
-	categoryRepository := categoryRepo.NewCategoryRepository(db)
+	userRepository := userRepo.NewUserRepository(db)
+	userController := userCtrl.NewUserController(userRepository)
+  
+  categoryRepository := categoryRepo.NewCategoryRepository(db)
 	categoryController := categoryCtrl.NewCategoryController(categoryRepository)
 
-	route.RegisterPath(e, categoryController)
+	productRepo := productRepo.NewProductRepository(db)
+	productController := productController.NewProductController(productRepo)
+
+	route.RegisterPath(e, userController, productController, categoryController)
 
 	fmt.Println(db)
 
