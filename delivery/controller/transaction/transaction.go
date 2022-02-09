@@ -1,24 +1,26 @@
 package transaction
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/xendit/xendit-go"
 	"net/http"
 	"petshop/constants"
 	"petshop/delivery/common"
-	"petshop/delivery/helper"
+	"petshop/delivery/middleware"
 	"petshop/entity"
-	"petshop/middlewares"
-	"petshop/repository/transaction"
+	transRepo "petshop/repository/transaction"
+	"time"
 )
 
 type TransactionController struct {
-	transactionRepo transaction.Transaction
+	transactionRepo transRepo.Transaction
 }
 
-func NewTransactionController(transactionRepo transaction.Transaction) *TransactionController {
+func NewTransactionController(transactionRepo transRepo.Transaction) *TransactionController {
 	return &TransactionController{transactionRepo}
 }
+
 func (tc TransactionController) Create() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var transactionRequest []TransactionRequest
@@ -28,19 +30,18 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 		c.Bind(&transactionRequest)
 
 		//get data from token
-		userID := middlewares.NewAuth().ExtractTokenUserID(c)
+		userID := middleware.ExtractTokenUserID(c)
 
 		//helper
-		help, err := helper.TransactionHelper(transactionRequest, userID)
 
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
-		}
+		year, month, day := time.Now().Date()
+		hour, minute, second := time.Now().Clock()
+		ExternalID := fmt.Sprint("Invoice-", userID, "-", year, month, day, hour, minute, second)
 
 		//save to db
 		transactionData := entity.Transaction{
 			UserID:        uint(userID),
-			InvoiceID:     help.ExternalID,
+			InvoiceID:     ExternalID,
 			PaymentURL:    help.InvoiceURL,
 			TotalPrice:    int(help.Amount),
 			PaymentStatus: help.Status,
@@ -61,7 +62,10 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 			detail, _ := tc.transactionRepo.TransactionDetail(transactionDetailData)
 
 			if help.Items[i].Category == "Grooming" {
-				helper.GroomingStatusHelper(transactionRequest[i].PetID, detail.ID)
+				err = tc.transactionRepo.GroomingStatusHelper(transactionRequest[i].PetID, detail.ID)
+				if err != nil {
+					return err
+				}
 			}
 
 		}
@@ -69,3 +73,35 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, common.SuccessResponse(help))
 	}
 }
+
+//
+//func (tc TransactionController) Callback() echo.HandlerFunc {
+//	return func(c echo.Context) error {
+//		req := c.Request()
+//		headers := req.Header
+//
+//		callBackToken := headers.Get("X-Callback-Token")
+//
+//		if callBackToken != constants.CallbackToken {
+//			return c.JSON(http.StatusUnauthorized, common.NewUnauthorized())
+//		}
+//
+//		var callBackRequest CallbackRequest
+//		c.Bind(&callBackRequest)
+//
+//		parsePaid, _ := time.Parse(time.RFC3339, callBackRequest.PaidAt)
+//
+//		callBackData := entities.Booking{
+//			PaymentStatus: callBackRequest.Status,
+//			PaymentMethod: callBackRequest.PaymentMethod,
+//			PaidAt:        parsePaid,
+//		}
+//
+//		callBack, _ := bc.bookRepo.Update(callBackRequest.ExternalID, callBackData)
+//
+//		return c.JSON(http.StatusOK, common.SuccessResponse(callBack))
+//
+//	}
+//
+//		return c.JSON(http.StatusOK, common.SuccessResponse(help))
+//	}

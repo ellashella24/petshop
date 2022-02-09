@@ -3,7 +3,12 @@ package main
 import (
 	"fmt"
 	"petshop/config"
+	productController "petshop/delivery/controller/product"
+	transactionController "petshop/delivery/controller/transaction"
 	"petshop/delivery/middleware"
+	"petshop/delivery/route"
+	productRepo "petshop/repository/product"
+	transactionRepo "petshop/repository/transaction"
 	"petshop/util"
 
 	"github.com/go-playground/validator/v10"
@@ -25,7 +30,13 @@ func main() {
 
 	middleware.LogMiddleware(e)
 
-	fmt.Println(db)
+	productRepo := productRepo.NewProductRepository(db)
+	productController := productController.NewProductController(productRepo)
+
+	transactionRepo := transactionRepo.NewTransactionRepository(db)
+	transactionController := transactionController.NewTransactionController(transactionRepo)
+
+	route.RegisterPath(e, productController transactionController)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", config.Port)))
 }
