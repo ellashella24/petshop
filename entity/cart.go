@@ -7,5 +7,5 @@ type Cart struct {
 	ID        uint
 	UserID    uint
 	ProductID uint
-	Jumlah    uint
+	Quantity  int `gorm:"Default:1"`
 }

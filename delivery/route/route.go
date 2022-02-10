@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"petshop/constant"
+	"petshop/delivery/controller/cart"
 	"petshop/delivery/controller/category"
 	"petshop/delivery/controller/product"
 	"petshop/delivery/controller/transaction"
@@ -13,7 +14,7 @@ import (
 
 func RegisterPath(
 	e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController,
-	categoryCtrl *category.CategoryController, tc *transaction.TransactionController,
+	categoryCtrl *category.CategoryController, tc *transaction.TransactionController, cc *cart.CartController,
 ) {
 	eAuth := e.Group("")
 	eAuth.Use(middleware.JWT([]byte(constant.SecretKey)))
@@ -45,6 +46,14 @@ func RegisterPath(
 	e.GET("/stock/product/:id", pc.GetStockHistory(), middleware.JWT([]byte("secret123")))
 
 	e.POST("/transaction", tc.Create(), middleware.JWT([]byte("secret123")))
+	e.GET("/transaction/store", tc.GetAllStoreTransaction(), middleware.JWT([]byte("secret123")))
+	e.GET("/transaction/user", tc.GetAllUserTransaction(), middleware.JWT([]byte("secret123")))
 	e.POST("/callback", tc.Callback())
+
+	//cart
+	e.POST("/cart", cc.Create(), middleware.JWT([]byte("secret123")))
+	e.POST("/cart/checkout", cc.CartTansaction(), middleware.JWT([]byte("secret123")))
+	e.GET("/cart", cc.GetAll(), middleware.JWT([]byte("secret123")))
+	e.DELETE("/cart/:id", cc.Delete(), middleware.JWT([]byte("secret123")))
 
 }

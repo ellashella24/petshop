@@ -5,12 +5,14 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"petshop/config"
+	"petshop/delivery/controller/cart"
 	categoryCtrl "petshop/delivery/controller/category"
 	productController "petshop/delivery/controller/product"
 	transactionController "petshop/delivery/controller/transaction"
 	userCtrl "petshop/delivery/controller/user"
 	"petshop/delivery/middleware"
 	"petshop/delivery/route"
+	cartRepo "petshop/repository/cart"
 	categoryRepo "petshop/repository/category"
 	productRepo "petshop/repository/product"
 	transactionRepo "petshop/repository/transaction"
@@ -47,7 +49,10 @@ func main() {
 	transactionRepo := transactionRepo.NewTransactionRepository(db)
 	transactionController := transactionController.NewTransactionController(transactionRepo)
 
-	route.RegisterPath(e, userController, productController, categoryController, transactionController)
+	cartRepo := cartRepo.NewCartRepository(db)
+	cartController := cart.NewCartController(cartRepo)
+
+	route.RegisterPath(e, userController, productController, categoryController, transactionController, cartController)
 
 	fmt.Println(db)
 
