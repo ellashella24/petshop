@@ -7,6 +7,7 @@ import (
 	cityCtrl "petshop/delivery/controller/city"
 	petCtrl "petshop/delivery/controller/pet"
 	productController "petshop/delivery/controller/product"
+	storeCtrl "petshop/delivery/controller/store"
 	transactionController "petshop/delivery/controller/transaction"
 	userCtrl "petshop/delivery/controller/user"
 	"petshop/delivery/middleware"
@@ -15,6 +16,7 @@ import (
 	cityRepo "petshop/repository/city"
 	petRepo "petshop/repository/pet"
 	productRepo "petshop/repository/product"
+	storeRepo "petshop/repository/store"
 	transactionRepo "petshop/repository/transaction"
 	userRepo "petshop/repository/user"
 	"petshop/util"
@@ -40,6 +42,9 @@ func main() {
 
 	e.Validator = &CustomValidator{validator: validator.New()}
 
+	storeRepository := storeRepo.NewStoreRepository(db)
+	storeController := storeCtrl.NewStoreController(storeRepository)
+
 	petRepository := petRepo.NewPetRepository(db)
 	petController := petCtrl.NewPetController(petRepository)
 
@@ -58,7 +63,7 @@ func main() {
 	transactionRepo := transactionRepo.NewTransactionRepository(db)
 	transactionController := transactionController.NewTransactionController(transactionRepo)
 
-	route.RegisterPath(e, userController, productController, categoryController, transactionController, cityController, petController)
+	route.RegisterPath(e, userController, productController, categoryController, transactionController, cityController, petController, storeController)
 
 	fmt.Println(db)
 
