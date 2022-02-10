@@ -33,6 +33,7 @@ func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.Produ
 	eAuthAdmin.GET("/city/profile/:id", cityCtrl.GetCityProfile())
 	eAuthAdmin.PUT("/city/profile/:id", cityCtrl.UpdateCityProfile())
 	eAuthAdmin.DELETE("/city/:id", cityCtrl.DeleteCity())
+  
 	// User Route Path
 	e.POST("/user/register", userCtrl.Register())
 	e.POST("/user/login", userCtrl.Login())
