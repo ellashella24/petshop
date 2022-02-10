@@ -4,6 +4,7 @@ import (
 	"petshop/constant"
 	"petshop/delivery/controller/category"
 	"petshop/delivery/controller/city"
+	"petshop/delivery/controller/pet"
 	"petshop/delivery/controller/product"
 	"petshop/delivery/controller/transaction"
 	"petshop/delivery/controller/user"
@@ -13,11 +14,18 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController, categoryCtrl *category.CategoryController, tc *transaction.TransactionController, cityCtrl *city.CityController) {
+func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController, categoryCtrl *category.CategoryController, tc *transaction.TransactionController, cityCtrl *city.CityController, petCtrl *pet.PetController) {
 	eAuth := e.Group("")
 	eAuth.Use(middleware.JWT([]byte(constant.SecretKey)))
 	eAuthAdmin := eAuth.Group("")
 	eAuthAdmin.Use(mw.IsAdmin)
+
+	// Pet Route Path
+	eAuth.POST("/user/pet", petCtrl.CreatePet())
+	eAuth.GET("/user/pets", petCtrl.GetAllPetByUser())
+	eAuth.GET("/user/pet/profile/:id", petCtrl.GetPetProfile())
+	eAuth.PUT("/user/pet/profile/:id", petCtrl.UpdatePetProfile())
+	eAuth.DELETE("/user/pet/:id", petCtrl.DeletePet())
 
 	// City Route Path
 	eAuthAdmin.POST("/city", cityCtrl.CreateCity())
@@ -25,6 +33,7 @@ func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.Produ
 	eAuthAdmin.GET("/city/profile/:id", cityCtrl.GetCityProfile())
 	eAuthAdmin.PUT("/city/profile/:id", cityCtrl.UpdateCityProfile())
 	eAuthAdmin.DELETE("/city/:id", cityCtrl.DeleteCity())
+  
 	// User Route Path
 	e.POST("/user/register", userCtrl.Register())
 	e.POST("/user/login", userCtrl.Login())
