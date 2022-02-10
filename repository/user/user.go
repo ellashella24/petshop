@@ -27,7 +27,7 @@ func NewUserRepository(db *gorm.DB) *userRepository {
 func (ur *userRepository) FindCityByID(cityID int) (entity.City, error) {
 	city := entity.City{}
 
-	err := ur.db.Where("id = ?", cityID).Find(&city).Error
+	err := ur.db.Where("id = ?", cityID).First(&city).Error
 
 	if err != nil || city.ID == 0 {
 		return city, err

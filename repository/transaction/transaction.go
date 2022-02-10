@@ -17,6 +17,8 @@ type Transaction interface {
 	GetUserByID(userID int) (entity.User, error)
 	Callback(callback entity.Transaction) error
 	UpdateStock(productID, stock int) error
+	GetAllUserTransaction(userID int) ([]entity.Transaction, error)
+	GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error)
 }
 
 type transactionRepository struct {
@@ -44,7 +46,24 @@ func (tr *transactionRepository) TransactionDetail(newDetailTransactions entity.
 	}
 	return newDetailTransactions, nil
 }
+func (tr *transactionRepository) GetAllUserTransaction(userID int) ([]entity.Transaction, error) {
+	var transaction []entity.Transaction
+	tr.db.Where(userID).Find(&transaction)
 
+	return transaction, nil
+}
+func (tr *transactionRepository) GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error) {
+	var transactionDetail []entity.TransactionDetail
+	err := tr.db.Table("transaction_details").Joins("join products on transaction_details.product_id = products.id").Where(
+		"products.store_id = ?", userID,
+	).Find(&transactionDetail).Error
+
+	if err != nil || len(transactionDetail) == 0 {
+		return transactionDetail, errors.New("not found")
+	}
+
+	return transactionDetail, nil
+}
 func (tr *transactionRepository) Callback(callback entity.Transaction) error {
 
 	var callbackData entity.Transaction
@@ -78,14 +97,16 @@ func (tr *transactionRepository) Callback(callback entity.Transaction) error {
 			if err != nil {
 				return err
 			}
-			stock := product.Stock + transactionDetail[i].Quantity
 
-			err = tr.db.Where("id = ?", product.ID).Model(&product).Update("stock", stock).Error
+			if product.CategoryID != 1 {
+				stock := product.Stock + transactionDetail[i].Quantity
 
-			if err != nil || product.Stock != stock {
-				return err
+				err = tr.db.Where("id = ?", product.ID).Model(&product).Update("stock", stock).Error
+
+				if err != nil || product.Stock != stock {
+					return err
+				}
 			}
-
 		}
 	}
 

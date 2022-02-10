@@ -28,7 +28,6 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 		var transactionRequest []TransactionRequest
 		xendit.Opt.SecretKey = constants.XendToken
 
-		fmt.Println(transactionRequest)
 		// bind request data
 		c.Bind(&transactionRequest)
 
@@ -127,10 +126,6 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 
 			if invoiceItems[i].Category == "Grooming" {
 				tc.transactionRepo.GroomingStatusHelper(transactionRequest[i].PetID, detail.ID)
-			} else {
-
-			}
-			{
 			}
 
 		}
@@ -138,7 +133,27 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, common.SuccessResponse(transactionRes))
 	}
 }
+func (tc TransactionController) GetAllUserTransaction() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userID := middleware.ExtractTokenUserID(c)
 
+		res, err := tc.transactionRepo.GetAllUserTransaction(userID)
+		if err != nil || len(res) == 0 {
+			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
+		}
+
+		return c.JSON(http.StatusOK, common.SuccessResponse(res))
+	}
+}
+
+func (tc TransactionController) GetAllStoreTransaction() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userID := middleware.ExtractTokenUserID(c)
+		getAllStore, _ := tc.transactionRepo.GetAllStoreTransaction(userID)
+
+		return c.JSON(http.StatusOK, common.SuccessResponse(getAllStore))
+	}
+}
 func (tc TransactionController) Callback() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := c.Request()
