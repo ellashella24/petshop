@@ -33,18 +33,6 @@ func (sc *StoreController) CreateStore() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get the input"))
 		}
 
-		store, err := sc.storeRepo.GetAllStoreByUserID(userID)
-
-		if err != nil || len(store) != 0 {
-			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "This user has already created shop before"))
-		}
-
-		city, err := sc.storeRepo.FindCityByID(int(createStoreReq.CityID))
-
-		if err != nil || city.ID == 0 {
-			return c.JSON(http.StatusBadRequest, common.ErrorResponse(404, "City not found"))
-		}
-
 		newStore := entity.Store{}
 		newStore.Name = createStoreReq.Name
 		newStore.CityID = createStoreReq.CityID
@@ -129,12 +117,6 @@ func (sc *StoreController) UpdateStoreProfile() echo.HandlerFunc {
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get the input"))
-		}
-
-		city, err := sc.storeRepo.FindCityByID(int(updateStoreReq.CityID))
-
-		if err != nil || city.ID == 0 {
-			return c.JSON(http.StatusBadRequest, common.ErrorResponse(404, "City not found"))
 		}
 
 		updatedStore := entity.Store{}

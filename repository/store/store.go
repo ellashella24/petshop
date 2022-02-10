@@ -51,8 +51,8 @@ func (sr *storeRepository) GetAllStoreByUserID(userID int) ([]entity.Store, erro
 
 	err := sr.db.Where("user_id = ?", userID).Find(&stores).Error
 
-	if err != nil {
-		return stores, err
+	if err != nil || len(stores) == 0 {
+		return stores, errors.New("store not found")
 	}
 
 	return stores, nil
@@ -64,7 +64,7 @@ func (sr *storeRepository) GetStoreProfile(storeID, userID int) (entity.Store, e
 	err := sr.db.Where("id = ? AND user_id = ?", storeID, userID).Find(&store).Error
 
 	if err != nil || store.ID == 0 {
-		return store, err
+		return store, errors.New("store not found")
 	}
 
 	return store, nil
@@ -76,7 +76,7 @@ func (sr *storeRepository) UpdateStoreProfile(storeID, userID int, updatedStore 
 	err := sr.db.Where("id = ? AND user_id = ?", storeID, userID).Find(&store).Error
 
 	if err != nil || store.ID == 0 {
-		return store, err
+		return store, errors.New("store not found")
 	}
 
 	sr.db.Model(&store).Updates(&updatedStore)
