@@ -39,7 +39,7 @@ func (pr *petRepository) GetAllPetByUserID(userID int) ([]entity.Pet, error) {
 	err := pr.db.Where("user_id = ?", userID).Find(&pets).Error
 
 	if err != nil || len(pets) == 0 {
-		return pets, err
+		return pets, errors.New("pet not found")
 	}
 
 	return pets, err
@@ -51,7 +51,7 @@ func (pr *petRepository) GetPetProfileByID(petID, userID int) (entity.Pet, error
 	err := pr.db.Where("id = ? AND user_id = ?", petID, userID).Find(&pet).Error
 
 	if err != nil || pet.ID == 0 {
-		return pet, err
+		return pet, errors.New("pet not found")
 	}
 
 	return pet, err
@@ -63,7 +63,7 @@ func (pr *petRepository) UpdatePetProfile(petID, userID int, updatedPet entity.P
 	err := pr.db.Where("id = ? AND user_id = ?", petID, userID).Find(&pet).Error
 
 	if err != nil || pet.ID == 0 {
-		return pet, err
+		return pet, errors.New("pet not found")
 	}
 
 	pr.db.Model(&pet).Updates(&updatedPet)
