@@ -3,10 +3,22 @@ package main
 import (
 	"fmt"
 	"petshop/config"
+	categoryCtrl "petshop/delivery/controller/category"
+	cityCtrl "petshop/delivery/controller/city"
+	petCtrl "petshop/delivery/controller/pet"
+	productController "petshop/delivery/controller/product"
 	storeCtrl "petshop/delivery/controller/store"
+	transactionController "petshop/delivery/controller/transaction"
+	userCtrl "petshop/delivery/controller/user"
 	"petshop/delivery/middleware"
 	"petshop/delivery/route"
+	categoryRepo "petshop/repository/category"
+	cityRepo "petshop/repository/city"
+	petRepo "petshop/repository/pet"
+	productRepo "petshop/repository/product"
 	storeRepo "petshop/repository/store"
+	transactionRepo "petshop/repository/transaction"
+	userRepo "petshop/repository/user"
 	"petshop/util"
 
 	"github.com/go-playground/validator/v10"
@@ -33,7 +45,25 @@ func main() {
 	storeRepository := storeRepo.NewStoreRepository(db)
 	storeController := storeCtrl.NewStoreController(storeRepository)
 
-	route.RegisterPath(e, storeController)
+	petRepository := petRepo.NewPetRepository(db)
+	petController := petCtrl.NewPetController(petRepository)
+
+	cityRepository := cityRepo.NewCityRepository(db)
+	cityController := cityCtrl.NewCityController(cityRepository)
+
+	userRepository := userRepo.NewUserRepository(db)
+	userController := userCtrl.NewUserController(userRepository)
+
+	categoryRepository := categoryRepo.NewCategoryRepository(db)
+	categoryController := categoryCtrl.NewCategoryController(categoryRepository)
+
+	productRepo := productRepo.NewProductRepository(db)
+	productController := productController.NewProductController(productRepo)
+
+	transactionRepo := transactionRepo.NewTransactionRepository(db)
+	transactionController := transactionController.NewTransactionController(transactionRepo)
+
+	route.RegisterPath(e, userController, productController, categoryController, transactionController, cityController, petController, storeController)
 
 	fmt.Println(db)
 
