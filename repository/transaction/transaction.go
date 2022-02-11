@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
 	"petshop/entity"
 )
@@ -21,15 +20,15 @@ type Transaction interface {
 	GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error)
 }
 
-type transactionRepository struct {
+type TransactionRepository struct {
 	db *gorm.DB
 }
 
-func NewTransactionRepository(db *gorm.DB) *transactionRepository {
-	return &transactionRepository{db}
+func NewTransactionRepository(db *gorm.DB) *TransactionRepository {
+	return &TransactionRepository{db}
 }
 
-func (tr *transactionRepository) Transaction(newTransactions entity.Transaction) (entity.Transaction, error) {
+func (tr *TransactionRepository) Transaction(newTransactions entity.Transaction) (entity.Transaction, error) {
 	err := tr.db.Save(&newTransactions).Error
 	if err != nil {
 		return newTransactions, err
@@ -37,7 +36,7 @@ func (tr *transactionRepository) Transaction(newTransactions entity.Transaction)
 	return newTransactions, nil
 }
 
-func (tr *transactionRepository) TransactionDetail(newDetailTransactions entity.TransactionDetail) (
+func (tr *TransactionRepository) TransactionDetail(newDetailTransactions entity.TransactionDetail) (
 	entity.TransactionDetail, error,
 ) {
 	err := tr.db.Save(&newDetailTransactions).Error
@@ -46,13 +45,16 @@ func (tr *transactionRepository) TransactionDetail(newDetailTransactions entity.
 	}
 	return newDetailTransactions, nil
 }
-func (tr *transactionRepository) GetAllUserTransaction(userID int) ([]entity.Transaction, error) {
+func (tr *TransactionRepository) GetAllUserTransaction(userID int) ([]entity.Transaction, error) {
 	var transaction []entity.Transaction
-	tr.db.Where(userID).Find(&transaction)
+	err := tr.db.Where(userID).Find(&transaction).Error
 
+	if err != nil || len(transaction) == 0 {
+		return transaction, err
+	}
 	return transaction, nil
 }
-func (tr *transactionRepository) GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error) {
+func (tr *TransactionRepository) GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error) {
 	var transactionDetail []entity.TransactionDetail
 	err := tr.db.Table("transaction_details").Joins("join products on transaction_details.product_id = products.id").Where(
 		"products.store_id = ?", userID,
@@ -64,13 +66,13 @@ func (tr *transactionRepository) GetAllStoreTransaction(userID int) ([]entity.Tr
 
 	return transactionDetail, nil
 }
-func (tr *transactionRepository) Callback(callback entity.Transaction) error {
+func (tr *TransactionRepository) Callback(callback entity.Transaction) error {
 
 	var callbackData entity.Transaction
 	err := tr.db.Where("invoice_id = ?", callback.InvoiceID).Model(&callbackData).Updates(callback).Error
 
-	if err != nil || callbackData.PaymentStatus != callback.PaymentStatus {
-		return err
+	if err != nil || callbackData.InvoiceID == "" {
+		return errors.New("Error")
 	}
 
 	if callbackData.PaymentStatus == "EXPIRED" {
@@ -78,7 +80,7 @@ func (tr *transactionRepository) Callback(callback entity.Transaction) error {
 		var transaction entity.Transaction
 		var transactionDetail []entity.TransactionDetail
 		err = tr.db.Where("invoice_id = ?", callback.InvoiceID).First(&transaction).Error
-		fmt.Println("ini transaction", transaction)
+
 		if err != nil {
 			return err
 		}
@@ -89,23 +91,15 @@ func (tr *transactionRepository) Callback(callback entity.Transaction) error {
 			return errors.New("error")
 		}
 
-		fmt.Println("ini detail", transactionDetail)
-
 		for i := 0; i < len(transactionDetail); i++ {
 			var product entity.Product
-			err = tr.db.Where(" id = ?", transactionDetail[i].ProductID).First(&product).Error
-			if err != nil {
-				return err
-			}
+			tr.db.Where(" id = ?", transactionDetail[i].ProductID).First(&product)
 
 			if product.CategoryID != 1 {
 				stock := product.Stock + transactionDetail[i].Quantity
 
-				err = tr.db.Where("id = ?", product.ID).Model(&product).Update("stock", stock).Error
+				tr.db.Where("id = ?", product.ID).Model(&product).Update("stock", stock)
 
-				if err != nil || product.Stock != stock {
-					return err
-				}
 			}
 		}
 	}
@@ -114,7 +108,7 @@ func (tr *transactionRepository) Callback(callback entity.Transaction) error {
 }
 
 //transaction helper
-func (tr *transactionRepository) GroomingStatusHelper(petID int, transactionDetailID uint) error {
+func (tr *TransactionRepository) GroomingStatusHelper(petID int, transactionDetailID uint) error {
 	var groomingStatus entity.GroomingStatus
 	groomingStatus = entity.GroomingStatus{
 		PetID:               uint(petID),
@@ -128,7 +122,7 @@ func (tr *transactionRepository) GroomingStatusHelper(petID int, transactionDeta
 
 	return nil
 }
-func (tr *transactionRepository) PetValidator(petID int, userID int) error {
+func (tr *TransactionRepository) PetValidator(petID int, userID int) error {
 	var pet entity.Pet
 	err := tr.db.Where("id = ? And user_id = ?", petID, userID).First(&pet).Error
 
@@ -138,7 +132,7 @@ func (tr *transactionRepository) PetValidator(petID int, userID int) error {
 
 	return nil
 }
-func (tr *transactionRepository) GetProductByID(productID int) (entity.Product, error) {
+func (tr *TransactionRepository) GetProductByID(productID int) (entity.Product, error) {
 	var product entity.Product
 	err := tr.db.Where("id = ?", productID).First(&product).Error
 
@@ -148,7 +142,7 @@ func (tr *transactionRepository) GetProductByID(productID int) (entity.Product, 
 
 	return product, nil
 }
-func (tr *transactionRepository) GetCategoryByID(categoryID int) (entity.Category, error) {
+func (tr *TransactionRepository) GetCategoryByID(categoryID int) (entity.Category, error) {
 	var category entity.Category
 	err := tr.db.Where("id = ?", categoryID).First(&category).Error
 
@@ -158,7 +152,7 @@ func (tr *transactionRepository) GetCategoryByID(categoryID int) (entity.Categor
 
 	return category, nil
 }
-func (tr *transactionRepository) GetUserByID(userID int) (entity.User, error) {
+func (tr *TransactionRepository) GetUserByID(userID int) (entity.User, error) {
 	var user entity.User
 	err := tr.db.Where("id = ?", userID).First(&user).Error
 
@@ -168,14 +162,16 @@ func (tr *transactionRepository) GetUserByID(userID int) (entity.User, error) {
 
 	return user, nil
 }
-func (tr *transactionRepository) UpdateStock(productID, stock int) error {
+func (tr *TransactionRepository) UpdateStock(productID, stock int) error {
 	var product entity.Product
 
-	err := tr.db.Where("id = ?", productID).Model(&product).Update("stock", stock).Error
+	err := tr.db.Where("id = ?", productID).First(&product).Error
 
 	if err != nil {
 		return err
 	}
+
+	tr.db.Model(&product).Update("stock", stock)
 
 	return nil
 }
