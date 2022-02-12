@@ -32,8 +32,8 @@ func (cr *CartRepository) GetAll(userId int) ([]entity.Cart, error) {
 
 	if err := cr.db.Where(
 		"user_id = ?", userId,
-	).Find(&carts).Error; err != nil {
-		return nil, err
+	).Find(&carts).Error; err != nil || len(carts) == 0 {
+		return nil, errors.New("error")
 	}
 
 	return carts, nil

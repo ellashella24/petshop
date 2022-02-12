@@ -28,7 +28,6 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 		var transactionRequest []TransactionRequest
 		xendit.Opt.SecretKey = constants.XendToken
 
-		fmt.Println(transactionRequest)
 		// bind request data
 		c.Bind(&transactionRequest)
 
