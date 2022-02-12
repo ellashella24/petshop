@@ -2,7 +2,6 @@ package cart
 
 import (
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
 	"petshop/entity"
 )
@@ -73,23 +72,25 @@ func (cr *CartRepository) Update(cart entity.Cart) (entity.Cart, error) {
 }
 func (cr *CartRepository) Delete(userId int, productId int) (entity.Cart, error) {
 	var cart entity.Cart
+	err := cr.db.Where("product_id = ? AND user_id = ? ", productId, userId).First(&cart).Error
 
-	fmt.Println(userId, productId)
-	err := cr.db.Where("user_id = ? AND product_id = ?", userId, productId).Delete(&cart).Error
 	if err != nil {
 		return cart, err
 	}
+
+	cr.db.Delete(&cart)
+
 	return cart, nil
 }
-func (tr *CartRepository) Transaction(newTransactions entity.Transaction) (entity.Transaction, error) {
-	err := tr.db.Save(&newTransactions).Error
+func (cr *CartRepository) Transaction(newTransactions entity.Transaction) (entity.Transaction, error) {
+	err := cr.db.Save(&newTransactions).Error
 	if err != nil {
 		return newTransactions, err
 	}
 	return newTransactions, nil
 }
-func (tr *CartRepository) TransactionDetail(newDetailTransactions entity.TransactionDetail) error {
-	err := tr.db.Save(&newDetailTransactions).Error
+func (cr *CartRepository) TransactionDetail(newDetailTransactions entity.TransactionDetail) error {
+	err := cr.db.Save(&newDetailTransactions).Error
 	if err != nil {
 		return err
 	}
@@ -130,11 +131,13 @@ func (tr *CartRepository) GetUserByID(userID int) (entity.User, error) {
 func (tr *CartRepository) UpdateStock(productID, stock int) error {
 	var product entity.Product
 
-	err := tr.db.Where("id = ?", productID).Model(&product).Update("stock", stock).Error
+	err := tr.db.Where("id = ?", productID).First(&product).Error
 
 	if err != nil {
 		return err
 	}
+
+	tr.db.Model(&product).Update("stock", stock)
 
 	return nil
 }

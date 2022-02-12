@@ -54,7 +54,7 @@ func (cc CartController) CartTansaction() echo.HandlerFunc {
 			cart, _ := cc.CartRepo.GetAll(userID)
 
 			for i := range cart {
-				fmt.Println("ini", i)
+
 				productID := cart[i].ProductID
 
 				getProduct, _ := cc.CartRepo.GetProductByID(int(productID))
@@ -192,9 +192,6 @@ func (cc CartController) Create() echo.HandlerFunc {
 
 		data, err := cc.CartRepo.CheckCart(cartData)
 		if err != nil {
-			if cartData.Quantity > data.Quantity {
-				return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
-			}
 			_, err = cc.CartRepo.Create(cartData)
 			if err != nil {
 				return c.JSON(

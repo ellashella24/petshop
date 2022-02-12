@@ -8,6 +8,7 @@ import (
 	"petshop/entity"
 	"petshop/util"
 	"testing"
+	"time"
 )
 
 func TestSetup(t *testing.T) {
@@ -207,7 +208,7 @@ func TestGetAll(t *testing.T) {
 	)
 }
 
-func Update(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	config := config.GetConfig()
 	db := util.InitDB(config)
 	cartRepo := NewCartRepository(db)
@@ -215,22 +216,228 @@ func Update(t *testing.T) {
 	t.Run(
 		"1. Succes case", func(t *testing.T) {
 
-			mockRequest := 1
+			mockRequest := entity.Cart{
+				UserID:    1,
+				ProductID: 1,
+				Quantity:  10,
+			}
 
-			res, _ := cartRepo.GetAll(mockRequest)
+			res, _ := cartRepo.Update(mockRequest)
 
-			assert.Equal(t, 3, res[0].Quantity)
+			assert.Equal(t, 10, res.Quantity)
 
 		},
 	)
 
 	t.Run(
 		" 2.error case", func(t *testing.T) {
-			mockRequest := 10
-			_, err := cartRepo.GetAll(mockRequest)
+			mockRequest := entity.Cart{
+				UserID:    100,
+				ProductID: 100,
+				Quantity:  100,
+			}
+			_, err := cartRepo.Update(mockRequest)
 
 			assert.NotNil(t, err)
 
+		},
+	)
+}
+
+func TestTransaction(t *testing.T) {
+	config := config.GetConfig()
+	db := util.InitDB(config)
+
+	cartRepo := NewCartRepository(db)
+
+	t.Run(
+		"succes case", func(t *testing.T) {
+
+			mockRequest := entity.Transaction{
+				UserID:            1,
+				InvoiceID:         "invoice",
+				PaymentMethod:     "BANK_TRANSFER",
+				PaidAt:            time.Now(),
+				TotalPrice:        150000,
+				PaymentStatus:     "PENDING",
+				TransactionDetail: nil,
+			}
+			res, err := cartRepo.Transaction(mockRequest)
+			assert.Nil(t, err)
+			assert.Equal(t, uint(1), res.UserID)
+
+		},
+	)
+
+	t.Run(
+		"error case", func(t *testing.T) {
+
+			mockRequest := entity.Transaction{
+				InvoiceID:         "invoice",
+				PaymentMethod:     "BANK_TRANSFER",
+				PaidAt:            time.Now(),
+				TotalPrice:        150000,
+				PaymentStatus:     "PENDING",
+				TransactionDetail: nil,
+			}
+			_, err := cartRepo.Transaction(mockRequest)
+			assert.NotNil(t, err)
+		},
+	)
+}
+
+func TestTransactionDetail(t *testing.T) {
+	config := config.GetConfig()
+	db := util.InitDB(config)
+
+	cartRepo := NewCartRepository(db)
+
+	t.Run(
+		"succes case", func(t *testing.T) {
+
+			mockRequest := entity.TransactionDetail{
+				TransactionID:  1,
+				ProductID:      1,
+				Quantity:       5,
+				GroomingStatus: entity.GroomingStatus{},
+			}
+			err := cartRepo.TransactionDetail(mockRequest)
+			assert.Nil(t, err)
+
+		},
+	)
+
+	t.Run(
+		"error case", func(t *testing.T) {
+
+			mockRequest := entity.TransactionDetail{
+				ProductID:      1,
+				Quantity:       5,
+				GroomingStatus: entity.GroomingStatus{},
+			}
+			err := cartRepo.TransactionDetail(mockRequest)
+			assert.NotNil(t, err)
+
+		},
+	)
+}
+
+func TestGetProductByID(t *testing.T) {
+	config := config.GetConfig()
+	db := util.InitDB(config)
+
+	cartRepo := NewCartRepository(db)
+
+	t.Run(
+		"succes case", func(t *testing.T) {
+
+			_, err := cartRepo.GetProductByID(1)
+			assert.Nil(t, err)
+
+		},
+	)
+
+	t.Run(
+		"error case", func(t *testing.T) {
+
+			_, err := cartRepo.GetProductByID(100)
+			assert.NotNil(t, err)
+		},
+	)
+}
+
+func TestGetCategoryID(t *testing.T) {
+	config := config.GetConfig()
+	db := util.InitDB(config)
+
+	cartRepo := NewCartRepository(db)
+
+	t.Run(
+		"succes case", func(t *testing.T) {
+
+			_, err := cartRepo.GetCategoryByID(1)
+			assert.Nil(t, err)
+
+		},
+	)
+
+	t.Run(
+		"error case", func(t *testing.T) {
+
+			_, err := cartRepo.GetCategoryByID(100)
+			assert.NotNil(t, err)
+		},
+	)
+}
+
+func TestGetUserByID(t *testing.T) {
+	config := config.GetConfig()
+	db := util.InitDB(config)
+
+	cartRepo := NewCartRepository(db)
+
+	t.Run(
+		"succes case", func(t *testing.T) {
+
+			_, err := cartRepo.GetUserByID(1)
+			assert.Nil(t, err)
+
+		},
+	)
+
+	t.Run(
+		"error case", func(t *testing.T) {
+
+			_, err := cartRepo.GetUserByID(100)
+			assert.NotNil(t, err)
+		},
+	)
+}
+
+func TestUpdateStock(t *testing.T) {
+	config := config.GetConfig()
+	db := util.InitDB(config)
+
+	cartRepo := NewCartRepository(db)
+
+	t.Run(
+		"succes case", func(t *testing.T) {
+
+			err := cartRepo.UpdateStock(1, 10)
+			assert.Nil(t, err)
+
+		},
+	)
+
+	t.Run(
+		"error case", func(t *testing.T) {
+
+			err := cartRepo.UpdateStock(100, 10)
+			assert.NotNil(t, err)
+		},
+	)
+}
+
+func TestDelete(t *testing.T) {
+	config := config.GetConfig()
+	db := util.InitDB(config)
+
+	cartRepo := NewCartRepository(db)
+
+	t.Run(
+		"succes case", func(t *testing.T) {
+
+			_, err := cartRepo.Delete(1, 1)
+			assert.Nil(t, err)
+
+		},
+	)
+
+	t.Run(
+		"error case", func(t *testing.T) {
+
+			_, err := cartRepo.Delete(100, 100)
+			assert.NotNil(t, err)
 		},
 	)
 }
