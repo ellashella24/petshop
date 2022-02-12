@@ -31,6 +31,7 @@ func (uc *UserController) Register() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get the input"))
 		}
 
+
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(userRegisterReq.Password), bcrypt.MinCost)
 
 		newUser := entity.User{}
@@ -123,6 +124,7 @@ func (uc *UserController) UpdateProfile() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get the input"))
 		}
+
 
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(userUpdateReq.Password), bcrypt.MinCost)
 
