@@ -184,9 +184,9 @@ func TestGetAllUserTransaction(t *testing.T) {
 		"succes case", func(t *testing.T) {
 
 			mockRequest := 1
-			res, err := transactionRepo.GetAllUserTransaction(mockRequest)
+			transaction, _, err := transactionRepo.GetAllUserTransaction(mockRequest)
 			assert.Nil(t, err)
-			assert.Equal(t, uint(1), res[0].UserID)
+			assert.Equal(t, uint(1), transaction[0].UserID)
 
 		},
 	)
@@ -195,8 +195,8 @@ func TestGetAllUserTransaction(t *testing.T) {
 		"error case", func(t *testing.T) {
 
 			mockRequest := 100
-			res, _ := transactionRepo.GetAllUserTransaction(mockRequest)
-			assert.Equal(t, 0, len(res))
+			transaction, _, _ := transactionRepo.GetAllUserTransaction(mockRequest)
+			assert.Equal(t, 0, len(transaction))
 		},
 	)
 }
@@ -207,13 +207,35 @@ func TestGetAllStoreTransaction(t *testing.T) {
 
 	transactionRepo := NewTransactionRepository(db)
 
+	var transaction = entity.Transaction{
+		ID:                2,
+		UserID:            1,
+		InvoiceID:         "invoice12",
+		PaymentMethod:     "",
+		PaymentURL:        "",
+		PaidAt:            time.Time{},
+		TotalPrice:        100000,
+		PaymentStatus:     "Pending",
+		TransactionDetail: nil,
+	}
+	var transactionDetail = entity.TransactionDetail{
+		TransactionID:  2,
+		ProductID:      1,
+		Quantity:       1,
+		GroomingStatus: entity.GroomingStatus{},
+	}
+
+	db.Save(&transaction)
+	db.Save(&transactionDetail)
+
 	t.Run(
 		"succes case", func(t *testing.T) {
 
 			mockRequest := 1
-			res, err := transactionRepo.GetAllStoreTransaction(mockRequest)
+			transactionDetail, transaction, err := transactionRepo.GetAllStoreTransaction(mockRequest)
 			assert.Nil(t, err)
-			assert.Equal(t, 5, res[0].Quantity)
+			assert.Equal(t, 5, transactionDetail[0].Quantity)
+			assert.Equal(t, uint(1), transaction[0].ID)
 
 		},
 	)
@@ -222,8 +244,8 @@ func TestGetAllStoreTransaction(t *testing.T) {
 		"error case", func(t *testing.T) {
 
 			mockRequest := 100
-			res, _ := transactionRepo.GetAllStoreTransaction(mockRequest)
-			assert.Equal(t, 0, len(res))
+			transactionDetail, _, _ := transactionRepo.GetAllStoreTransaction(mockRequest)
+			assert.Equal(t, 0, len(transactionDetail))
 		},
 	)
 }
@@ -330,6 +352,50 @@ func TestGroomingStatusHelper(t *testing.T) {
 
 			err := transactionRepo.GroomingStatusHelper(100, 100)
 			assert.NotNil(t, err)
+		},
+	)
+}
+
+func TestGroomingStatusHelperUpdate(t *testing.T) {
+	config := config.GetConfig()
+	db := util.InitDB(config)
+
+	transactionRepo := NewTransactionRepository(db)
+
+	mockRequest := entity.Transaction{
+		UserID:            1,
+		InvoiceID:         "invoice1",
+		PaymentMethod:     "BANK_TRANSFER",
+		PaidAt:            time.Now(),
+		TotalPrice:        50000,
+		PaymentStatus:     "PENDING",
+		TransactionDetail: nil,
+	}
+
+	mockRequest1 := entity.TransactionDetail{
+		TransactionID: 3,
+		ProductID:     2,
+	}
+
+	transactionRepo.Transaction(mockRequest)
+	transactionRepo.TransactionDetail(mockRequest1)
+	t.Run(
+		"succes case", func(t *testing.T) {
+
+			mockRequest := "invoice1"
+			err := transactionRepo.GroomingStatusHelperUpdate(mockRequest)
+			assert.Nil(t, err)
+
+		},
+	)
+
+	t.Run(
+		"error case", func(t *testing.T) {
+
+			mockRequest := "ghetdh"
+			err := transactionRepo.GroomingStatusHelperUpdate(mockRequest)
+			assert.NotNil(t, err)
+
 		},
 	)
 }

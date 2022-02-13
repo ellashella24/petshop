@@ -17,7 +17,9 @@ import (
 )
 
 
+
 func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController, categoryCtrl *category.CategoryController, tc *transaction.TransactionController, cityCtrl *city.CityController, petCtrl *pet.PetController, storeCtrl *store.StoreController,  cc *cart.CartController) {
+
 
 	eAuth := e.Group("")
 	eAuth.Use(middleware.JWT([]byte(constant.SecretKey)))
