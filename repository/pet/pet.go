@@ -13,6 +13,8 @@ type Pet interface {
 	GetPetProfileByID(petID, userID int) (entity.Pet, error)
 	UpdatePetProfile(petID, userID int, updatedPet entity.Pet) (entity.Pet, error)
 	DeletePet(petID, userID int) (entity.Pet, error)
+	GetGroomingStatusByPetID(petID, userID int) (entity.GroomingStatus, error)
+	UpdateFinalGroomingStatus(petID, userID int) (entity.GroomingStatus, error)
 }
 
 type petRepository struct {
@@ -83,4 +85,32 @@ func (pr *petRepository) DeletePet(petID, userID int) (entity.Pet, error) {
 	pr.db.Delete(&pet)
 
 	return pet, err
+}
+
+func (pr *petRepository) GetGroomingStatusByPetID(petID, userID int) (entity.GroomingStatus, error) {
+	grooming_status := entity.GroomingStatus{}
+
+	pr.db.Joins("join pets ON grooming_statuses.pet_id = pets.id").Where("pets.id = ? AND pets.user_id = ?", petID, userID).Find(&grooming_status)
+
+	if grooming_status.Status == "" {
+		return grooming_status, errors.New("not found grooming status")
+	}
+
+	return grooming_status, nil
+}
+
+func (pr *petRepository) UpdateFinalGroomingStatus(petID, userID int) (entity.GroomingStatus, error) {
+	grooming_status := entity.GroomingStatus{}
+
+	pr.db.Joins("join pets ON grooming_statuses.pet_id = pets.id").Where("pets.id = ? AND pets.user_id = ?", petID, userID).Find(&grooming_status)
+
+	if grooming_status.Status == "" {
+		return grooming_status, errors.New("not found grooming status")
+	} else if grooming_status.Status == "DELIVERY KE USER" {
+		pr.db.Model(&grooming_status).Update("status", "SELESAI")
+	} else {
+		return grooming_status, errors.New("can't update grooming status")
+	}
+
+	return grooming_status, nil
 }

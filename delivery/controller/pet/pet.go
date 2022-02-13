@@ -148,3 +148,49 @@ func (pc *PetController) DeletePet() echo.HandlerFunc {
 
 	}
 }
+
+func (pc *PetController) GetGroomingStatusByPetID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		getGroomingReq := GetGroomingStatusFormatRequest{}
+
+		c.Bind(&getGroomingReq)
+
+		c.Validate(&getGroomingReq)
+
+		res, err := pc.petRepo.GetGroomingStatusByPetID(int(getGroomingReq.PetID), int(getGroomingReq.UserID))
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get grooming status"))
+		}
+
+		response := GroomingStatusResponse{}
+		response.ID = res.ID
+		response.PetID = res.PetID
+		response.Status = res.Status
+
+		return c.JSON(http.StatusOK, common.SuccessResponse(response))
+	}
+}
+
+func (pc *PetController) UpdateFinalGroomingStatus() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		getGroomingReq := GetGroomingStatusFormatRequest{}
+
+		c.Bind(&getGroomingReq)
+
+		c.Validate(&getGroomingReq)
+
+		res, err := pc.petRepo.UpdateFinalGroomingStatus(int(getGroomingReq.PetID), int(getGroomingReq.UserID))
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get grooming status"))
+		}
+
+		response := GroomingStatusResponse{}
+		response.ID = res.ID
+		response.PetID = res.PetID
+		response.Status = res.Status
+
+		return c.JSON(http.StatusOK, common.SuccessResponse(response))
+	}
+}
