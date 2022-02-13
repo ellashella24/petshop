@@ -51,6 +51,7 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 			productID := transactionRequest[i].ProductID
 
 			getProduct, _ := tc.transactionRepo.GetProductByID(productID)
+
 			category, _ := tc.transactionRepo.GetCategoryByID(int(getProduct.CategoryID))
 
 			//check Stock and update
@@ -88,6 +89,9 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 			invoiceItems = append(invoiceItems, invoiceItem)
 		}
 
+		if len(invoiceItems) == 0 {
+			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
+		}
 		//xendit customer
 		customerData, _ := tc.transactionRepo.GetUserByID(userID)
 
@@ -98,6 +102,7 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 
 		res := helper.CreateInvoice(ExternalID, float64(amount), customerData.Email, invoiceItems, customer)
 		//save to db
+
 		transactionData := entity.Transaction{
 			UserID:        uint(userID),
 			InvoiceID:     ExternalID,
@@ -106,11 +111,7 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 			PaymentStatus: res.Status,
 		}
 
-		transactionRes, err := tc.transactionRepo.Transaction(transactionData)
-
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, common.NewInternalServerErrorResponse())
-		}
+		transactionRes, _ := tc.transactionRepo.Transaction(transactionData)
 
 		for i := 0; i < len(transactionRequest); i++ {
 			transactionDetailData := entity.TransactionDetail{
@@ -118,18 +119,10 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 				ProductID:     uint(transactionRequest[i].ProductID),
 				Quantity:      transactionRequest[i].Quantity,
 			}
-			detail, err := tc.transactionRepo.TransactionDetail(transactionDetailData)
-
-			if err != nil {
-				return c.JSON(http.StatusInternalServerError, common.NewInternalServerErrorResponse())
-			}
+			detail, _ := tc.transactionRepo.TransactionDetail(transactionDetailData)
 
 			if invoiceItems[i].Category == "Grooming" {
 				tc.transactionRepo.GroomingStatusHelper(transactionRequest[i].PetID, detail.ID)
-			} else {
-
-			}
-			{
 			}
 
 		}
@@ -137,7 +130,30 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, common.SuccessResponse(transactionRes))
 	}
 }
+func (tc TransactionController) GetAllUserTransaction() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userID := middleware.ExtractTokenUserID(c)
 
+		res, err := tc.transactionRepo.GetAllUserTransaction(userID)
+		if err != nil || len(res) == 0 {
+			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
+		}
+
+		return c.JSON(http.StatusOK, common.SuccessResponse(res))
+	}
+}
+
+func (tc TransactionController) GetAllStoreTransaction() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userID := middleware.ExtractTokenUserID(c)
+		getAllStore, err := tc.transactionRepo.GetAllStoreTransaction(userID)
+
+		if err != nil || len(getAllStore) == 0 {
+			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
+		}
+		return c.JSON(http.StatusOK, common.SuccessResponse(getAllStore))
+	}
+}
 func (tc TransactionController) Callback() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := c.Request()

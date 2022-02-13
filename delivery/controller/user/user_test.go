@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/stretchr/testify/assert"
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"net/http/httptest"
 	"petshop/constants"
 	"petshop/delivery/common"
 	"petshop/entity"
 	"testing"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type CustomValidator struct {
@@ -29,445 +30,497 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func TestRegister(t *testing.T) {
-	t.Run(
-		"1. Success Register Test", func(t *testing.T) {
-			e := echo.New()
-			e.Validator = &CustomValidator{validator: validator.New()}
+	t.Run("1. Success Register Test", func(t *testing.T) {
+		e := echo.New()
+		e.Validator = &CustomValidator{validator: validator.New()}
 
-			requestBody, _ := json.Marshal(
-				RegisterFormatRequest{
-					Name:     "user1",
-					Email:    "user1@mail.com",
-					Password: "user1",
-					CityID:   1,
-				},
-			)
+		requestBody, _ := json.Marshal(
+			RegisterFormatRequest{
+				Name:     "user1",
+				Email:    "user1@mail.com",
+				Password: "user1",
+				CityID:   1,
+			},
+		)
 
-			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			context := e.NewContext(req, res)
-			context.SetPath("/users/register")
+		req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		context := e.NewContext(req, res)
+		context.SetPath("/users/register")
 
-			userController := NewUserController(mockUserRepository{})
-			userController.Register()(context)
+		userController := NewUserController(mockUserRepository{})
+		userController.Register()(context)
 
-			var response common.ResponseSuccess
+		var response common.ResponseSuccess
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			assert.Equal(t, "Successful Operation", response.Message)
-		},
-	)
-	t.Run(
-		"2. Error Register Test 1 - Error Validate ", func(t *testing.T) {
-			e := echo.New()
+		assert.Equal(t, "Successful Operation", response.Message)
+	})
 
-			requestBody, _ := json.Marshal(
-				RegisterFormatRequest{
-					Name:     "user1",
-					Email:    "use",
-					Password: "user1",
-				},
-			)
+	t.Run("2. Error Register Test 1 - Error Validate ", func(t *testing.T) {
+		e := echo.New()
 
-			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			context := e.NewContext(req, res)
-			context.SetPath("/users/register")
+		requestBody, _ := json.Marshal(
+			RegisterFormatRequest{
+				Name:     "user1",
+				Email:    "use",
+				Password: "user1",
+			},
+		)
 
-			userController := NewUserController(mockFalseUserRepository{})
-			userController.Register()(context)
+		req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		context := e.NewContext(req, res)
+		context.SetPath("/users/register")
 
-			var response common.DefaultResponse
+		userController := NewUserController(mockFalseUserRepository{})
+		userController.Register()(context)
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		var response common.DefaultResponse
 
-			assert.Equal(t, "Can't get the input", response.Message)
-		},
-	)
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-	t.Run(
-		"3. Error Register Test 2 - Can't Register ", func(t *testing.T) {
-			e := echo.New()
-			e.Validator = &CustomValidator{validator: validator.New()}
-			requestBody, _ := json.Marshal(
-				RegisterFormatRequest{
-					Name:     "user1",
-					Email:    "user@gmail.com",
-					Password: "user1",
-					CityID:   1,
-				},
-			)
+		assert.Equal(t, "Can't get the input", response.Message)
+	})
 
-			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			context := e.NewContext(req, res)
-			context.SetPath("/users/register")
+	t.Run("3. Error Register Test 2 - Can't Register ", func(t *testing.T) {
+		e := echo.New()
+		e.Validator = &CustomValidator{validator: validator.New()}
+		requestBody, _ := json.Marshal(
+			RegisterFormatRequest{
+				Name:     "user1",
+				Email:    "user@gmail.com",
+				Password: "user1",
+				CityID:   1,
+			},
+		)
 
-			userController := NewUserController(mockFalseUserRepository{})
-			userController.Register()(context)
+		req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		context := e.NewContext(req, res)
+		context.SetPath("/users/register")
 
-			var response common.ResponseError
+		userController := NewUserController(mockFalseUserRepository{})
+		userController.Register()(context)
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		var response common.ResponseError
 
-			assert.Equal(t, "Can't create user", response.Message)
-		},
-	)
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "Can't create user", response.Message)
+	})
 }
 
 func TestLogin(t *testing.T) {
+	t.Run("1. Success Login Test", func(t *testing.T) {
+		e := echo.New()
+		e.Validator = &CustomValidator{validator: validator.New()}
 
-	t.Run(
-		"1. Success Login Test", func(t *testing.T) {
-			e := echo.New()
-			e.Validator = &CustomValidator{validator: validator.New()}
+		requestBody, _ := json.Marshal(
+			LoginFormatRequest{
+				Email:    "user1@mail.com",
+				Password: "user1",
+			},
+		)
 
-			requestBody, _ := json.Marshal(
-				LoginFormatRequest{
-					Email:    "user1@mail.com",
-					Password: "user1",
-				},
-			)
+		req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		context := e.NewContext(req, res)
+		context.SetPath("/users/login")
 
-			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			context := e.NewContext(req, res)
-			context.SetPath("/users/login")
+		userController := NewUserController(mockUserRepository{})
+		userController.Login()(context)
 
-			userController := NewUserController(mockUserRepository{})
-			userController.Login()(context)
+		var response common.ResponseSuccess
 
-			var response common.ResponseSuccess
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		data := (response.Data).(map[string]interface{})
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
-			data := (response.Data).(map[string]interface{})
+		jwtToken = data["token"].(string)
 
-			jwtToken = data["token"].(string)
+		assert.Equal(t, "Successful Operation", response.Message)
+	})
 
-			assert.Equal(t, "Successful Operation", response.Message)
-		},
-	)
-	t.Run(
-		"2. Error Login Test 1 - Error Validate", func(t *testing.T) {
-			e := echo.New()
-			e.Validator = &CustomValidator{validator: validator.New()}
+	t.Run("2. Error Login Test 1 - Error Validate", func(t *testing.T) {
+		e := echo.New()
+		e.Validator = &CustomValidator{validator: validator.New()}
 
-			requestBody, _ := json.Marshal(
-				LoginFormatRequest{
-					Email:    "user1@mail",
-					Password: "user1",
-				},
-			)
+		requestBody, _ := json.Marshal(
+			LoginFormatRequest{
+				Email:    "user1@mail",
+				Password: "user1",
+			},
+		)
 
-			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			context := e.NewContext(req, res)
-			context.SetPath("/users/login")
+		req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		context := e.NewContext(req, res)
+		context.SetPath("/users/login")
 
-			userController := NewUserController(mockFalseUserRepository{})
-			userController.Login()(context)
+		userController := NewUserController(mockFalseUserRepository{})
+		userController.Login()(context)
 
-			var response common.DefaultResponse
+		var response common.DefaultResponse
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			assert.Equal(t, "Can't get the input", response.Message)
-		},
-	)
-	t.Run(
-		"3. Error Login Test 2 - Not Found", func(t *testing.T) {
-			e := echo.New()
-			e.Validator = &CustomValidator{validator: validator.New()}
+		assert.Equal(t, "Can't get the input", response.Message)
+	})
 
-			requestBody, _ := json.Marshal(
-				LoginFormatRequest{
-					Email:    "user1@mail.com",
-					Password: "user1",
-				},
-			)
+	t.Run("3. Error Login Test 2 - Not Found", func(t *testing.T) {
+		e := echo.New()
+		e.Validator = &CustomValidator{validator: validator.New()}
 
-			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			context := e.NewContext(req, res)
-			context.SetPath("/users/login")
+		requestBody, _ := json.Marshal(
+			LoginFormatRequest{
+				Email:    "user1@mail.com",
+				Password: "user1",
+			},
+		)
 
-			userController := NewUserController(mockFalseUserRepository{})
-			userController.Login()(context)
+		req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		context := e.NewContext(req, res)
+		context.SetPath("/users/login")
 
-			var response common.DefaultResponse
+		userController := NewUserController(mockFalseUserRepository{})
+		userController.Login()(context)
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		var response common.DefaultResponse
 
-			assert.Equal(t, "User not found", response.Message)
-		},
-	)
-	t.Run(
-		"4. Error Login Test 3 - Password doesn't match", func(t *testing.T) {
-			e := echo.New()
-			e.Validator = &CustomValidator{validator: validator.New()}
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			requestBody, _ := json.Marshal(
-				LoginFormatRequest{
-					Email:    "user1@mail.com",
-					Password: "ok",
-				},
-			)
+		assert.Equal(t, "User not found", response.Message)
+	})
 
-			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			context := e.NewContext(req, res)
-			context.SetPath("/users/login")
+	t.Run("4. Error Login Test 3 - Password doesn't match", func(t *testing.T) {
+		e := echo.New()
+		e.Validator = &CustomValidator{validator: validator.New()}
 
-			userController := NewUserController(mockUserRepository{})
-			userController.Login()(context)
+		requestBody, _ := json.Marshal(
+			LoginFormatRequest{
+				Email:    "user1@mail.com",
+				Password: "ok",
+			},
+		)
 
-			var response common.DefaultResponse
+		req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		context := e.NewContext(req, res)
+		context.SetPath("/users/login")
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		userController := NewUserController(mockUserRepository{})
+		userController.Login()(context)
 
-			fmt.Println(response)
+		var response common.DefaultResponse
 
-			assert.Equal(t, "Password doesn't match", response.Message)
-		},
-	)
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "Password doesn't match", response.Message)
+	})
 }
 
 func TestGetUserProfile(t *testing.T) {
-	t.Run(
-		"1. Success Get User Profile", func(t *testing.T) {
-			e := echo.New()
+	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
 
-			req := httptest.NewRequest(http.MethodGet, "/", nil)
-			res := httptest.NewRecorder()
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+	requestBody, _ := json.Marshal(LoginFormatRequest{
+		Email:    "user1@mail.com",
+		Password: "user1",
+	})
 
-			context := e.NewContext(req, res)
-			context.SetPath("/users")
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+	res := httptest.NewRecorder()
+	req.Header.Set("Content-Type", "application/json")
+	context := e.NewContext(req, res)
+	context.SetPath("/users/login")
 
-			userController := NewUserController(mockUserRepository{})
+	userController := NewUserController(mockUserRepository{})
+	userController.Login()(context)
 
-			err := middleware.JWT([]byte(constants.SecretKey))(userController.GetUserProfile())(context)
+	var response common.ResponseSuccess
 
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+	json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			var response common.ResponseSuccess
+	data := (response.Data).(map[string]interface{})
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+	jwtToken = data["token"].(string)
 
-			assert.Equal(t, "Successful Operation", response.Message)
-		},
-	)
-	t.Run(
-		"2. Error Get User Profile Test", func(t *testing.T) {
-			e := echo.New()
+	t.Run("1. Success Get User Profile", func(t *testing.T) {
+		e := echo.New()
 
-			req := httptest.NewRequest(http.MethodGet, "/", nil)
-			res := httptest.NewRecorder()
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		res := httptest.NewRecorder()
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
 
-			context := e.NewContext(req, res)
-			context.SetPath("/users")
+		context := e.NewContext(req, res)
+		context.SetPath("/users")
 
-			userController := NewUserController(mockFalseUserRepository{})
+		userController := NewUserController(mockUserRepository{})
 
-			err := middleware.JWT([]byte(constants.SecretKey))(userController.GetUserProfile())(context)
+		err := middleware.JWT([]byte(constants.SecretKey))(userController.GetUserProfile())(context)
 
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-			var response common.DefaultResponse
+		var response common.ResponseSuccess
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			assert.Equal(t, "User not found", response.Message)
-		},
-	)
+		assert.Equal(t, "Successful Operation", response.Message)
+	})
+
+	t.Run("2. Error Get User Profile Test", func(t *testing.T) {
+		e := echo.New()
+
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		res := httptest.NewRecorder()
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+
+		context := e.NewContext(req, res)
+		context.SetPath("/users")
+
+		userController := NewUserController(mockFalseUserRepository{})
+
+		err := middleware.JWT([]byte(constants.SecretKey))(userController.GetUserProfile())(context)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		var response common.DefaultResponse
+
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "User not found", response.Message)
+	})
 }
 
 func TestUpdateProfile(t *testing.T) {
-	t.Run(
-		"1. Success Update User Test", func(t *testing.T) {
-			e := echo.New()
-			e.Validator = &CustomValidator{validator: validator.New()}
+	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
 
-			requestBody, _ := json.Marshal(
-				UpdateFormatRequest{
-					Name:     "user1 new",
-					Email:    "user1@mail.com",
-					Password: "user1",
-					CityID:   1,
-				},
-			)
+	requestBody, _ := json.Marshal(LoginFormatRequest{
+		Email:    "user1@mail.com",
+		Password: "user1",
+	})
 
-			req := httptest.NewRequest(http.MethodPut, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+	res := httptest.NewRecorder()
+	req.Header.Set("Content-Type", "application/json")
+	context := e.NewContext(req, res)
+	context.SetPath("/users/login")
 
-			context := e.NewContext(req, res)
-			context.SetPath("/users")
+	userController := NewUserController(mockUserRepository{})
+	userController.Login()(context)
 
-			userController := NewUserController(mockUserRepository{})
+	var response common.ResponseSuccess
 
-			err := middleware.JWT([]byte(constants.SecretKey))(userController.UpdateProfile())(context)
+	json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+	data := (response.Data).(map[string]interface{})
 
-			var response common.ResponseSuccess
+	jwtToken = data["token"].(string)
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+	t.Run("1. Success Update User Test", func(t *testing.T) {
+		e := echo.New()
+		e.Validator = &CustomValidator{validator: validator.New()}
 
-			assert.Equal(t, "Successful Operation", response.Message)
-		},
-	)
-	t.Run(
-		"2. Error Update User Test 1 - Error Validate ", func(t *testing.T) {
-			e := echo.New()
+		requestBody, _ := json.Marshal(
+			UpdateFormatRequest{
+				Name:     "user1 new",
+				Email:    "user1@mail.com",
+				Password: "user1",
+				CityID:   1,
+			},
+		)
 
-			requestBody, _ := json.Marshal(
-				UpdateFormatRequest{
-					Name:     "user1 new",
-					Email:    "user1@mail.com",
-					Password: "user1",
-					CityID:   1,
-				},
-			)
+		req := httptest.NewRequest(http.MethodPut, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
 
-			req := httptest.NewRequest(http.MethodPut, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+		context := e.NewContext(req, res)
+		context.SetPath("/users")
 
-			context := e.NewContext(req, res)
-			context.SetPath("/users")
+		userController := NewUserController(mockUserRepository{})
 
-			userController := NewUserController(mockFalseUserRepository{})
+		err := middleware.JWT([]byte(constants.SecretKey))(userController.UpdateProfile())(context)
 
-			err := middleware.JWT([]byte(constants.SecretKey))(userController.UpdateProfile())(context)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+		var response common.ResponseSuccess
 
-			var response common.DefaultResponse
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		assert.Equal(t, "Successful Operation", response.Message)
+	})
 
-			assert.Equal(t, "Can't get the input", response.Message)
-		},
-	)
-	t.Run(
-		"3. Error Update User Test 2 - Can't Update", func(t *testing.T) {
-			e := echo.New()
-			e.Validator = &CustomValidator{validator: validator.New()}
+	t.Run("2. Error Update User Test 1 - Error Validate ", func(t *testing.T) {
+		e := echo.New()
 
-			requestBody, _ := json.Marshal(
-				UpdateFormatRequest{
-					Name:     "user1 new",
-					Email:    "user1@mail.com",
-					Password: "user1",
-					CityID:   1,
-				},
-			)
+		requestBody, _ := json.Marshal(
+			UpdateFormatRequest{
+				Name:     "user1 new",
+				Email:    "user1@mail.com",
+				Password: "user1",
+				CityID:   1,
+			},
+		)
 
-			req := httptest.NewRequest(http.MethodPut, "/", bytes.NewBuffer(requestBody))
-			res := httptest.NewRecorder()
-			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+		req := httptest.NewRequest(http.MethodPut, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
 
-			context := e.NewContext(req, res)
-			context.SetPath("/users")
+		context := e.NewContext(req, res)
+		context.SetPath("/users")
 
-			userController := NewUserController(mockFalseUserRepository{})
+		userController := NewUserController(mockFalseUserRepository{})
 
-			err := middleware.JWT([]byte(constants.SecretKey))(userController.UpdateProfile())(context)
+		err := middleware.JWT([]byte(constants.SecretKey))(userController.UpdateProfile())(context)
 
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-			var response common.DefaultResponse
+		var response common.DefaultResponse
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			assert.Equal(t, "Can't update user", response.Message)
-		},
-	)
+		assert.Equal(t, "Can't get the input", response.Message)
+	})
+
+	t.Run("3. Error Update User Test 2 - Can't Update", func(t *testing.T) {
+		e := echo.New()
+		e.Validator = &CustomValidator{validator: validator.New()}
+
+		requestBody, _ := json.Marshal(
+			UpdateFormatRequest{
+				Name:     "user1 new",
+				Email:    "user1@mail.com",
+				Password: "user1",
+				CityID:   1,
+			},
+		)
+
+		req := httptest.NewRequest(http.MethodPut, "/", bytes.NewBuffer(requestBody))
+		res := httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+
+		context := e.NewContext(req, res)
+		context.SetPath("/users")
+
+		userController := NewUserController(mockFalseUserRepository{})
+
+		err := middleware.JWT([]byte(constants.SecretKey))(userController.UpdateProfile())(context)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		var response common.DefaultResponse
+
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "Can't update user", response.Message)
+	})
 }
 
 func TestDeleteAccount(t *testing.T) {
-	t.Run(
-		"14. Success Delete User Test", func(t *testing.T) {
-			e := echo.New()
+	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
 
-			req := httptest.NewRequest(http.MethodDelete, "/", nil)
-			res := httptest.NewRecorder()
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+	requestBody, _ := json.Marshal(LoginFormatRequest{
+		Email:    "user1@mail.com",
+		Password: "user1",
+	})
 
-			context := e.NewContext(req, res)
-			context.SetPath("/users")
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+	res := httptest.NewRecorder()
+	req.Header.Set("Content-Type", "application/json")
+	context := e.NewContext(req, res)
+	context.SetPath("/users/login")
 
-			userController := NewUserController(mockUserRepository{})
+	userController := NewUserController(mockUserRepository{})
+	userController.Login()(context)
 
-			err := middleware.JWT([]byte(constants.SecretKey))(userController.DeleteAccount())(context)
+	var response common.ResponseSuccess
 
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+	json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			var response common.ResponseSuccess
+	data := (response.Data).(map[string]interface{})
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+	jwtToken = data["token"].(string)
 
-			assert.Equal(t, "Successful Operation", response.Message)
-		},
-	)
-	t.Run(
-		"15. Error Delete User Test", func(t *testing.T) {
-			e := echo.New()
+	t.Run("1. Success Delete User Test", func(t *testing.T) {
+		e := echo.New()
 
-			req := httptest.NewRequest(http.MethodDelete, "/", nil)
-			res := httptest.NewRecorder()
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+		req := httptest.NewRequest(http.MethodDelete, "/", nil)
+		res := httptest.NewRecorder()
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
 
-			context := e.NewContext(req, res)
-			context.SetPath("/users")
+		context := e.NewContext(req, res)
+		context.SetPath("/users")
 
-			userController := NewUserController(mockFalseUserRepository{})
+		userController := NewUserController(mockUserRepository{})
 
-			err := middleware.JWT([]byte(constants.SecretKey))(userController.DeleteAccount())(context)
+		err := middleware.JWT([]byte(constants.SecretKey))(userController.DeleteAccount())(context)
 
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-			var response common.DefaultResponse
+		var response common.ResponseSuccess
 
-			json.Unmarshal([]byte(res.Body.Bytes()), &response)
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			assert.Equal(t, "Can't delete account", response.Message)
-		},
-	)
+		assert.Equal(t, "Successful Operation", response.Message)
+	})
+
+	t.Run("2. Error Delete User Test", func(t *testing.T) {
+		e := echo.New()
+
+		req := httptest.NewRequest(http.MethodDelete, "/", nil)
+		res := httptest.NewRecorder()
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
+
+		context := e.NewContext(req, res)
+		context.SetPath("/users")
+
+		userController := NewUserController(mockFalseUserRepository{})
+
+		err := middleware.JWT([]byte(constants.SecretKey))(userController.DeleteAccount())(context)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		var response common.DefaultResponse
+
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "Can't delete account", response.Message)
+	})
 }
 
 type mockUserRepository struct{}
@@ -479,6 +532,7 @@ func (mu mockUserRepository) GetAllUser() ([]entity.User, error) {
 		{ID: 1, Name: "user1", Email: "user1@mail.com", Password: string(hashPassword), Role: "admin", CityID: 1},
 	}, nil
 }
+
 func (mu mockUserRepository) GetUserByID(userID int) (entity.User, error) {
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 
@@ -486,10 +540,12 @@ func (mu mockUserRepository) GetUserByID(userID int) (entity.User, error) {
 		ID: 1, Name: "user1", Email: "user1@mail.com", Password: string(hashPassword), Role: "admin", CityID: 1,
 	}, nil
 }
+
 func (mu mockUserRepository) FindCityByID(cityID int) (entity.City, error) {
 
 	return entity.City{ID: 1, Name: "Indramayu"}, nil
 }
+
 func (mu mockUserRepository) GetUserByEmail(email string) (entity.User, error) {
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 
@@ -497,6 +553,7 @@ func (mu mockUserRepository) GetUserByEmail(email string) (entity.User, error) {
 		ID: 1, Name: "user1", Email: "user1@mail.com", Password: string(hashPassword), Role: "admin", CityID: 1,
 	}, nil
 }
+
 func (mu mockUserRepository) CreateUser(newUser entity.User) (entity.User, error) {
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 
@@ -504,6 +561,7 @@ func (mu mockUserRepository) CreateUser(newUser entity.User) (entity.User, error
 		ID: 1, Name: "user1", Email: "user1@mail.com", Password: string(hashPassword), Role: "admin", CityID: 1,
 	}, nil
 }
+
 func (mu mockUserRepository) UpdateUser(userID int, updatedUser entity.User) (entity.User, error) {
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 
@@ -511,6 +569,7 @@ func (mu mockUserRepository) UpdateUser(userID int, updatedUser entity.User) (en
 		ID: 1, Name: "user1 new", Email: "user1@mail.com", Password: string(hashPassword), Role: "admin", CityID: 1,
 	}, nil
 }
+
 func (mu mockUserRepository) DeleteUser(userID int) (entity.User, error) {
 	// hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 
@@ -524,6 +583,7 @@ type mockFalseUserRepository struct{}
 func (mfu mockFalseUserRepository) GetAllUser() ([]entity.User, error) {
 	return nil, errors.New("can't get users data")
 }
+
 func (mfu mockFalseUserRepository) GetUserByID(userID int) (entity.User, error) {
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 
@@ -531,6 +591,7 @@ func (mfu mockFalseUserRepository) GetUserByID(userID int) (entity.User, error) 
 		ID: 1, Name: "user1", Email: "user1@mail.com", Password: string(hashPassword), Role: "admin",
 	}, errors.New("can't get user data")
 }
+
 func (mfu mockFalseUserRepository) GetUserByEmail(email string) (entity.User, error) {
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 
@@ -538,15 +599,18 @@ func (mfu mockFalseUserRepository) GetUserByEmail(email string) (entity.User, er
 		ID: 1, Name: "user1", Email: "user1@mail.com", Password: string(hashPassword), Role: "admin",
 	}, errors.New("can't get user data")
 }
+
 func (mfu mockFalseUserRepository) CreateUser(newUser entity.User) (entity.User, error) {
 	// hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 
 	return entity.User{}, errors.New("can't create user data")
 }
+
 func (mu mockFalseUserRepository) FindCityByID(cityID int) (entity.City, error) {
 
 	return entity.City{}, errors.New("error")
 }
+
 func (mfu mockFalseUserRepository) UpdateUser(userID int, updatedUser entity.User) (entity.User, error) {
 	// hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 
@@ -554,6 +618,7 @@ func (mfu mockFalseUserRepository) UpdateUser(userID int, updatedUser entity.Use
 		ID: 0, Name: "", Email: "", Password: "", Role: "",
 	}, errors.New("can't update user data")
 }
+
 func (mfu mockFalseUserRepository) DeleteUser(userID int) (entity.User, error) {
 	// hashPassword, _ := bcrypt.GenerateFromPassword([]byte("user1"), bcrypt.MinCost)
 

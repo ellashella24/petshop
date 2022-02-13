@@ -108,7 +108,7 @@ func (cc *CategoryController) UpdateCategoryProfile() echo.HandlerFunc {
 		res, err := cc.categoryRepo.UpdateCategory(categoryID, updatedCategory)
 
 		if err != nil || res.Name == "" {
-			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't update store"))
+			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't update category"))
 		}
 
 		response := CategoryFormatResponse{}
@@ -123,7 +123,7 @@ func (cc *CategoryController) DeleteCategory() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		categoryID, _ := strconv.Atoi(c.Param("id"))
 
-		_, err := cc.categoryRepo.DeletecCategory(categoryID)
+		_, err := cc.categoryRepo.DeleteCategory(categoryID)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't delete category"))

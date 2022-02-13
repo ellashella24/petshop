@@ -27,7 +27,7 @@ func NewUserRepository(db *gorm.DB) *userRepository {
 func (ur *userRepository) FindCityByID(cityID int) (entity.City, error) {
 	city := entity.City{}
 
-	err := ur.db.Where("id = ?", cityID).Find(&city).Error
+	err := ur.db.Where("id = ?", cityID).First(&city).Error
 
 	if err != nil || city.ID == 0 {
 		return city, err
@@ -51,8 +51,8 @@ func (ur *userRepository) GetUserByEmail(email string) (entity.User, error) {
 
 	err := ur.db.Where("email = ?", email).Find(&user).Error
 
-	if err != nil {
-		return user, err
+	if err != nil || user.ID == 0 {
+		return user, errors.New("email not found")
 	}
 
 	return user, nil
@@ -63,8 +63,8 @@ func (ur *userRepository) GetUserByID(userID int) (entity.User, error) {
 
 	err := ur.db.Where("id = ?", userID).Find(&user).Error
 
-	if err != nil {
-		return user, err
+	if err != nil || user.ID == 0 {
+		return user, errors.New("user not found")
 	}
 
 	return user, nil
@@ -75,8 +75,8 @@ func (ur *userRepository) UpdateUser(userID int, updatedUser entity.User) (entit
 
 	err := ur.db.Where("id = ?", userID).Find(&user).Error
 
-	if err != nil {
-		return user, err
+	if err != nil || user.ID == 0 {
+		return user, errors.New("user not found")
 	}
 
 	ur.db.Model(&user).Updates(updatedUser)
@@ -90,7 +90,7 @@ func (ur *userRepository) DeleteUser(userID int) (entity.User, error) {
 	err := ur.db.Where("id = ?", userID).Find(&user).Error
 
 	if err != nil || user.ID == 0 {
-		return user, errors.New("")
+		return user, errors.New("user not found")
 	}
 
 	ur.db.Delete(&user)

@@ -31,11 +31,6 @@ func (uc *UserController) Register() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get the input"))
 		}
 
-		city, err := uc.userRepo.FindCityByID(int(userRegisterReq.CityID))
-
-		if err != nil || city.ID == 0 {
-			return c.JSON(http.StatusBadRequest, common.ErrorResponse(404, "City not found"))
-		}
 
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(userRegisterReq.Password), bcrypt.MinCost)
 
@@ -130,11 +125,6 @@ func (uc *UserController) UpdateProfile() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get the input"))
 		}
 
-		city, err := uc.userRepo.FindCityByID(int(userUpdateReq.CityID))
-
-		if err != nil || city.ID == 0 {
-			return c.JSON(http.StatusBadRequest, common.ErrorResponse(404, "City not found"))
-		}
 
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(userUpdateReq.Password), bcrypt.MinCost)
 
