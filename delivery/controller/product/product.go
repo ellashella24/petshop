@@ -1,7 +1,6 @@
 package product
 
 import (
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"petshop/delivery/common"
 	"petshop/delivery/middleware"
@@ -10,6 +9,8 @@ import (
 	"petshop/service"
 	"strconv"
 	"strings"
+
+	"github.com/labstack/echo/v4"
 )
 
 type ProductController struct {
@@ -66,6 +67,7 @@ func (uc *ProductController) GetProductByID() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, common.SuccessResponse(formatProduct))
 	}
 }
+
 func (uc *ProductController) GetStockHistory() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		productID, _ := strconv.Atoi(c.Param("id"))
@@ -112,7 +114,8 @@ func (uc *ProductController) GetProductStoreID() echo.HandlerFunc {
 			formatProducts = append(formatProducts, formatProduct)
 		}
 
-		return c.JSON(http.StatusOK, common.SuccessResponse(formatProduct))
+		// return c.JSON(http.StatusOK, common.SuccessResponse(formatProduct))
+		return c.JSON(http.StatusOK, common.SuccessResponse(formatProducts))
 	}
 }
 
@@ -129,6 +132,10 @@ func (uc *ProductController) CreateProduct() echo.HandlerFunc {
 		}
 
 		imageURL, err := service.Upload(c, strconv.Itoa(userId), file)
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
+		}
 
 		newProduct := entity.Product{}
 		newProduct.Name = CreateProductReq.Name
@@ -164,7 +171,6 @@ func (uc *ProductController) CreateProduct() echo.HandlerFunc {
 				ImageUrl: res.ImageURL,
 			}
 		}
-
 		return c.JSON(http.StatusOK, common.SuccessResponse(formatProduct))
 	}
 }
@@ -196,9 +202,10 @@ func (uc *ProductController) UpdateProduct() echo.HandlerFunc {
 
 		res, err := uc.productRepo.UpdateProduct(productID, updatedProduct)
 
-		if err != nil || res.Name == "" {
+		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
 		}
+
 		formatProduct := ProductFormatResponse{}
 
 		if res.CategoryID != 1 {

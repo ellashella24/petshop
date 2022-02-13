@@ -2,8 +2,9 @@ package product
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"petshop/entity"
+
+	"gorm.io/gorm"
 )
 
 type Product interface {
@@ -29,8 +30,8 @@ func (gr *productRepository) GetAllProduct() ([]entity.Product, error) {
 
 	err := gr.db.Where("category_id > 1").Find(&products).Error
 
-	if err != nil {
-		return products, nil
+	if err != nil || len(products) == 0 {
+		return products, errors.New("product not found")
 	}
 
 	return products, nil
@@ -39,10 +40,10 @@ func (gr *productRepository) GetAllProduct() ([]entity.Product, error) {
 func (gr *productRepository) GetProductByID(productID int) (entity.Product, error) {
 	product := entity.Product{}
 
-	err := gr.db.Where("id = ? AND id > 1", productID).Find(&product).Error
+	err := gr.db.Where("id = ? AND category_id > 1", productID).Find(&product).Error
 
-	if err != nil {
-		return product, nil
+	if err != nil || product.ID == 0 {
+		return product, errors.New("product not found")
 	}
 
 	return product, nil
@@ -54,7 +55,7 @@ func (gr *productRepository) GetProductByStoreID(storeID int) ([]entity.Product,
 	err := gr.db.Where("store_id = ?", storeID).Find(&product).Error
 
 	if err != nil || len(product) == 0 {
-		return product, err
+		return product, errors.New("product not found")
 	}
 
 	return product, nil
@@ -66,22 +67,22 @@ func (gr *productRepository) GetStockHistory(productID int) ([]entity.StockHisto
 	err := gr.db.Where("product_id = ?", productID).Find(&stock).Error
 
 	if err != nil || len(stock) == 0 {
-		return stock, err
+		return stock, errors.New("product history not found")
 	}
 
 	return stock, nil
 }
 
 func (gr *productRepository) CreateProduct(userID int, newProduct entity.Product) (entity.Product, error) {
-	var store entity.Store
+	// var store entity.Store
 	var stock entity.StockHistory
-	err := gr.db.Where("user_id = ? and id = ?", userID, newProduct.StoreID).First(&store).Error
+	// err := gr.db.Where("user_id = ? and id = ?", userID, newProduct.StoreID).First(&store).Error
 
-	if err != nil {
-		return newProduct, err
-	}
+	// if err != nil || store.ID == 0 {
+	// 	return newProduct, errors.New("store not found")
+	// }
 
-	err = gr.db.Save(&newProduct).Error
+	err := gr.db.Save(&newProduct).Error
 	if err != nil {
 		return newProduct, err
 	}
@@ -91,10 +92,11 @@ func (gr *productRepository) CreateProduct(userID int, newProduct entity.Product
 		Stock:     newProduct.Stock,
 	}
 
-	err = gr.db.Save(&stock).Error
-	if err != nil {
-		return newProduct, err
-	}
+	gr.db.Save(&stock)
+	// err = gr.db.Save(&stock).Error
+	// if err != nil {
+	// 	return newProduct, err
+	// }
 
 	return newProduct, nil
 }
@@ -119,25 +121,30 @@ func (gr *productRepository) UpdateProduct(productID int, updatedProduct entity.
 			ProductID: product.ID,
 			Stock:     updatedProduct.Stock,
 		}
-		err = gr.db.Save(&stock).Error
-		if err != nil {
-			return updatedProduct, err
-		}
+
+		gr.db.Save(&stock)
+
+		// err = gr.db.Save(&stock).Error
+		// if err != nil {
+		// 	return updatedProduct, err
+		// }
 	}
 
 	gr.db.Model(&product).Updates(updatedProduct)
 
-	return updatedProduct, nil
+	return product, nil
 }
 
 func (gr *productRepository) DeleteProduct(productID int) (entity.Product, error) {
 	product := entity.Product{}
 
-	err := gr.db.Where("id = ?", productID).Delete(&product).Error
+	err := gr.db.Where("id = ?", productID).Find(&product).Error
 
-	if err != nil {
-		return product, err
+	if err != nil || product.ID == 0 {
+		return product, errors.New("product not found")
 	}
+
+	gr.db.Delete(&product)
 
 	return product, nil
 }
