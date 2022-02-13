@@ -195,7 +195,7 @@ func (cc CartController) Create() echo.HandlerFunc {
 			_, err = cc.CartRepo.Create(cartData)
 			if err != nil {
 				return c.JSON(
-					http.StatusInternalServerError, common.ErrorResponse(http.StatusInternalServerError, err.Error()),
+					http.StatusInternalServerError, common.NewInternalServerErrorResponse(),
 				)
 			}
 		} else {
@@ -243,7 +243,7 @@ func (cc CartController) Update() echo.HandlerFunc {
 
 		_, err := cc.CartRepo.Update(data)
 		if err != nil {
-			return c.JSON(http.StatusNotFound, common.ErrorResponse(http.StatusNotFound, err.Error()))
+			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
 		}
 
 		return c.JSON(http.StatusOK, common.NewSuccessOperationResponse())
@@ -256,7 +256,7 @@ func (cc CartController) Delete() echo.HandlerFunc {
 		userID := middleware.ExtractTokenUserID(c)
 
 		productId, err := strconv.Atoi(c.Param("id"))
-		fmt.Println(err)
+
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
 		}
