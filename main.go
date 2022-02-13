@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"petshop/config"
+	"petshop/delivery/controller/cart"
 	categoryCtrl "petshop/delivery/controller/category"
 	cityCtrl "petshop/delivery/controller/city"
 	petCtrl "petshop/delivery/controller/pet"
@@ -12,6 +13,7 @@ import (
 	userCtrl "petshop/delivery/controller/user"
 	"petshop/delivery/middleware"
 	"petshop/delivery/route"
+	cartRepo "petshop/repository/cart"
 	categoryRepo "petshop/repository/category"
 	cityRepo "petshop/repository/city"
 	petRepo "petshop/repository/pet"
@@ -63,7 +65,11 @@ func main() {
 	transactionRepo := transactionRepo.NewTransactionRepository(db)
 	transactionController := transactionController.NewTransactionController(transactionRepo)
 
-	route.RegisterPath(e, userController, productController, categoryController, transactionController, cityController, petController, storeController)
+	cartRepo := cartRepo.NewCartRepository(db)
+	cartController := cart.NewCartController(cartRepo)
+
+	route.RegisterPath(e, userController, productController, categoryController, transactionController, cityController, petController, storeController, cartController)
+
 
 	fmt.Println(db)
 
