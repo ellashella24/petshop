@@ -155,3 +155,49 @@ func (sc *StoreController) DeleteStore() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, common.SuccessResponse(nil))
 	}
 }
+
+func (sc *StoreController) GetGroomingStatusByPetID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		getGroomingReq := GetGroomingStatusFormatRequest{}
+
+		c.Bind(&getGroomingReq)
+
+		c.Validate(&getGroomingReq)
+
+		res, err := sc.storeRepo.GetGroomingStatusByPetID(int(getGroomingReq.PetID), int(getGroomingReq.StoreID))
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get grooming status"))
+		}
+
+		response := GroomingStatusResponse{}
+		response.ID = res.ID
+		response.PetID = res.PetID
+		response.Status = res.Status
+
+		return c.JSON(http.StatusOK, common.SuccessResponse(response))
+	}
+}
+
+func (sc *StoreController) UpdateGroomingStatus() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		updateGroomingReq := UpdateGroomingStatusFormatRequest{}
+
+		c.Bind(&updateGroomingReq)
+
+		c.Validate(&updateGroomingReq)
+
+		res, err := sc.storeRepo.UpdateGroomingStatus(int(updateGroomingReq.PetID), int(updateGroomingReq.StoreID))
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't update grooming status"))
+		}
+
+		response := GroomingStatusResponse{}
+		response.ID = res.ID
+		response.PetID = res.PetID
+		response.Status = res.Status
+
+		return c.JSON(http.StatusOK, common.SuccessResponse(response))
+	}
+}
