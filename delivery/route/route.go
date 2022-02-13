@@ -15,7 +15,11 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController, categoryCtrl *category.CategoryController, tc *transaction.TransactionController, cityCtrl *city.CityController, petCtrl *pet.PetController, storeCtrl *store.StoreController) {
+func RegisterPath(
+	e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController,
+	categoryCtrl *category.CategoryController, tc *transaction.TransactionController, cityCtrl *city.CityController,
+	petCtrl *pet.PetController, storeCtrl *store.StoreController,
+) {
 	eAuth := e.Group("")
 	eAuth.Use(middleware.JWT([]byte(constant.SecretKey)))
 	eAuthAdmin := eAuth.Group("")
@@ -67,6 +71,8 @@ func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.Produ
 	e.GET("/stock/product/:id", pc.GetStockHistory(), middleware.JWT([]byte("secret123")))
 
 	e.POST("/transaction", tc.Create(), middleware.JWT([]byte("secret123")))
+	e.GET("/transaction/user", tc.GetAllUserTransaction(), middleware.JWT([]byte("secret123")))
+	e.GET("/transaction/store", tc.GetAllStoreTransaction(), middleware.JWT([]byte("secret123")))
 	e.POST("/callback", tc.Callback())
 
 }

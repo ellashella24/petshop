@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"petshop/entity"
 )
@@ -16,8 +17,9 @@ type Transaction interface {
 	GetUserByID(userID int) (entity.User, error)
 	Callback(callback entity.Transaction) error
 	UpdateStock(productID, stock int) error
-	GetAllUserTransaction(userID int) ([]entity.Transaction, error)
-	GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error)
+	GetAllUserTransaction(userID int) ([]entity.Transaction, [][]entity.TransactionDetail, error)
+	GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, []entity.Transaction, error)
+	GroomingStatusHelperUpdate(invoiceID string) error
 }
 
 type TransactionRepository struct {
@@ -45,26 +47,52 @@ func (tr *TransactionRepository) TransactionDetail(newDetailTransactions entity.
 	}
 	return newDetailTransactions, nil
 }
-func (tr *TransactionRepository) GetAllUserTransaction(userID int) ([]entity.Transaction, error) {
+func (tr *TransactionRepository) GetAllUserTransaction(userID int) (
+	[]entity.Transaction, [][]entity.TransactionDetail, error,
+) {
 	var transaction []entity.Transaction
-	err := tr.db.Where(userID).Find(&transaction).Error
+	var transactionDetail [][]entity.TransactionDetail
+	err := tr.db.Where("user_id", userID).Find(&transaction).Error
 
 	if err != nil || len(transaction) == 0 {
-		return transaction, err
+		return transaction, transactionDetail, err
 	}
-	return transaction, nil
+
+	for i := range transaction {
+		var transDetailData []entity.TransactionDetail
+		tr.db.Where("transaction_id", transaction[i].ID).Find(&transDetailData)
+		transactionDetail = append(transactionDetail, transDetailData)
+	}
+	return transaction, transactionDetail, nil
 }
-func (tr *TransactionRepository) GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error) {
+func (tr *TransactionRepository) GetAllStoreTransaction(userID int) (
+	[]entity.TransactionDetail, []entity.Transaction, error,
+) {
 	var transactionDetail []entity.TransactionDetail
+	var transactions []entity.Transaction
 	err := tr.db.Table("transaction_details").Joins("join products on transaction_details.product_id = products.id").Where(
 		"products.store_id = ?", userID,
 	).Find(&transactionDetail).Error
 
 	if err != nil || len(transactionDetail) == 0 {
-		return transactionDetail, errors.New("not found")
+		return transactionDetail, transactions, errors.New("not found")
 	}
 
-	return transactionDetail, nil
+	for i := range transactionDetail {
+		var transaction entity.Transaction
+
+		tr.db.Where("id", transactionDetail[i].TransactionID).First(&transaction)
+
+		if len(transactions) == 0 {
+			transactions = append(transactions, transaction)
+		}
+
+		if transactions[len(transactions)-1].ID != transaction.ID {
+			transactions = append(transactions, transaction)
+		}
+	}
+
+	return transactionDetail, transactions, nil
 }
 func (tr *TransactionRepository) Callback(callback entity.Transaction) error {
 
@@ -122,6 +150,29 @@ func (tr *TransactionRepository) GroomingStatusHelper(petID int, transactionDeta
 
 	return nil
 }
+
+func (tr *TransactionRepository) GroomingStatusHelperUpdate(invoiceID string) error {
+	var transaction entity.Transaction
+	var transactionDetail entity.TransactionDetail
+	var groomingStatus entity.GroomingStatus
+	var product entity.Product
+	err := tr.db.Where("invoice_id = ?", invoiceID).First(&transaction).Error
+	if err != nil {
+		return err
+	}
+	tr.db.Where("transaction_id = ?", transaction.ID).First(&transactionDetail)
+	tr.db.Where("id = ?", transactionDetail.ProductID).First(&product)
+
+	fmt.Println("ini product id", product.CategoryID)
+	if product.CategoryID == 1 {
+		tr.db.Model(&groomingStatus).Where("transaction_detail_id", transactionDetail.ID).Update(
+			"status", "TELAH DIBAYAR",
+		)
+	}
+
+	return nil
+}
+
 func (tr *TransactionRepository) PetValidator(petID int, userID int) error {
 	var pet entity.Pet
 	err := tr.db.Where("id = ? And user_id = ?", petID, userID).First(&pet).Error

@@ -435,6 +435,9 @@ func (mb mockTransactionRepository) TransactionDetail(newDetailTransactions enti
 func (mb mockTransactionRepository) GroomingStatusHelper(petID int, transactionDetailID uint) error {
 	return nil
 }
+func (mb mockTransactionRepository) GroomingStatusHelperUpdate(invoiceID string) error {
+	return nil
+}
 func (mb mockTransactionRepository) PetValidator(petID int, userID int) error {
 	return nil
 }
@@ -470,28 +473,60 @@ func (mb mockTransactionRepository) Callback(callback entity.Transaction) error 
 func (mb mockTransactionRepository) UpdateStock(productID, stock int) error {
 	return nil
 }
-func (mb mockTransactionRepository) GetAllUserTransaction(userID int) ([]entity.Transaction, error) {
+func (mb mockTransactionRepository) GetAllUserTransaction(userID int) (
+	[]entity.Transaction, [][]entity.TransactionDetail, error,
+) {
 	return []entity.Transaction{
-		{
-			ID:            1,
-			UserID:        1,
-			InvoiceID:     "invoice",
-			PaymentMethod: "BANK_TRANSFER",
-			PaidAt:        time.Now(),
-			TotalPrice:    100000,
-			PaymentStatus: "PENDING",
-		},
-	}, nil
+			{
+				ID:            1,
+				UserID:        1,
+				InvoiceID:     "invoice",
+				PaymentMethod: "BANK_TRANSFER",
+				PaidAt:        time.Now(),
+				TotalPrice:    100000,
+				PaymentStatus: "PENDING",
+			},
+		}, [][]entity.TransactionDetail{
+			[]entity.TransactionDetail{
+				{
+					ID:             1,
+					TransactionID:  1,
+					ProductID:      1,
+					Quantity:       1,
+					GroomingStatus: entity.GroomingStatus{},
+				},
+			},
+		}, nil
 }
-func (mb mockTransactionRepository) GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error) {
+func (mb mockTransactionRepository) GetAllStoreTransaction(userID int) (
+	[]entity.TransactionDetail, []entity.Transaction, error,
+) {
 	return []entity.TransactionDetail{
-		{
-			ID:            1,
-			TransactionID: 1,
-			ProductID:     1,
-			Quantity:      10,
-		},
-	}, nil
+			{
+				ID:            1,
+				TransactionID: 1,
+				ProductID:     1,
+				Quantity:      1,
+			},
+			{
+				ID:            1,
+				TransactionID: 2,
+				ProductID:     1,
+				Quantity:      1,
+			},
+		}, []entity.Transaction{
+			{
+				ID:                1,
+				UserID:            1,
+				InvoiceID:         "invoice",
+				PaymentMethod:     "BANK_TRANSFER",
+				PaymentURL:        "xendit.com",
+				PaidAt:            time.Time{},
+				TotalPrice:        100000,
+				PaymentStatus:     "PENDING",
+				TransactionDetail: nil,
+			},
+		}, nil
 }
 
 type mockFalseTransactionRepository struct{}
@@ -506,6 +541,9 @@ func (mb mockFalseTransactionRepository) TransactionDetail(newDetailTransactions
 }
 func (mb mockFalseTransactionRepository) GroomingStatusHelper(petID int, transactionDetailID uint) error {
 	return errors.New("Error")
+}
+func (mb mockFalseTransactionRepository) GroomingStatusHelperUpdate(invoiceID string) error {
+	return errors.New("Errors")
 }
 func (mb mockFalseTransactionRepository) PetValidator(petID int, userID int) error {
 	return errors.New("Error")
@@ -525,11 +563,15 @@ func (mb mockFalseTransactionRepository) Callback(callback entity.Transaction) e
 func (mb mockFalseTransactionRepository) UpdateStock(productID, stock int) error {
 	return errors.New("Error")
 }
-func (mb mockFalseTransactionRepository) GetAllUserTransaction(userID int) ([]entity.Transaction, error) {
-	return []entity.Transaction{}, errors.New("Error")
+func (mb mockFalseTransactionRepository) GetAllUserTransaction(userID int) (
+	[]entity.Transaction, [][]entity.TransactionDetail, error,
+) {
+	return []entity.Transaction{}, [][]entity.TransactionDetail{}, errors.New("Error")
 }
-func (mb mockFalseTransactionRepository) GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error) {
-	return []entity.TransactionDetail{}, errors.New("Error")
+func (mb mockFalseTransactionRepository) GetAllStoreTransaction(userID int) (
+	[]entity.TransactionDetail, []entity.Transaction, error,
+) {
+	return []entity.TransactionDetail{}, []entity.Transaction{}, errors.New("Error")
 }
 
 type mockGroomingTransactionRepository struct{}
@@ -559,6 +601,9 @@ func (mb mockGroomingTransactionRepository) TransactionDetail(newDetailTransacti
 	}, nil
 }
 func (mb mockGroomingTransactionRepository) GroomingStatusHelper(petID int, transactionDetailID uint) error {
+	return nil
+}
+func (mb mockGroomingTransactionRepository) GroomingStatusHelperUpdate(invoiceID string) error {
 	return nil
 }
 func (mb mockGroomingTransactionRepository) PetValidator(petID int, userID int) error {
@@ -596,7 +641,9 @@ func (mb mockGroomingTransactionRepository) Callback(callback entity.Transaction
 func (mb mockGroomingTransactionRepository) UpdateStock(productID, stock int) error {
 	return nil
 }
-func (mb mockGroomingTransactionRepository) GetAllUserTransaction(userID int) ([]entity.Transaction, error) {
+func (mb mockGroomingTransactionRepository) GetAllUserTransaction(userID int) (
+	[]entity.Transaction, [][]entity.TransactionDetail, error,
+) {
 	return []entity.Transaction{
 		{
 			ID:            1,
@@ -607,9 +654,11 @@ func (mb mockGroomingTransactionRepository) GetAllUserTransaction(userID int) ([
 			TotalPrice:    100000,
 			PaymentStatus: "PENDING",
 		},
-	}, nil
+	}, [][]entity.TransactionDetail{}, nil
 }
-func (mb mockGroomingTransactionRepository) GetAllStoreTransaction(userID int) ([]entity.TransactionDetail, error) {
+func (mb mockGroomingTransactionRepository) GetAllStoreTransaction(userID int) (
+	[]entity.TransactionDetail, []entity.Transaction, error,
+) {
 	return []entity.TransactionDetail{
 		{
 			ID:            1,
@@ -617,7 +666,7 @@ func (mb mockGroomingTransactionRepository) GetAllStoreTransaction(userID int) (
 			ProductID:     1,
 			Quantity:      10,
 		},
-	}, nil
+	}, []entity.Transaction{}, nil
 }
 
 type mockGroomingFalseTransactionRepository struct{}
@@ -648,6 +697,9 @@ func (mb mockGroomingFalseTransactionRepository) TransactionDetail(newDetailTran
 }
 func (mb mockGroomingFalseTransactionRepository) GroomingStatusHelper(petID int, transactionDetailID uint) error {
 	return nil
+}
+func (mb mockGroomingFalseTransactionRepository) GroomingStatusHelperUpdate(invoiceID string) error {
+	return errors.New("Errors")
 }
 func (mb mockGroomingFalseTransactionRepository) PetValidator(petID int, userID int) error {
 	return errors.New("Error")
@@ -684,7 +736,9 @@ func (mb mockGroomingFalseTransactionRepository) Callback(callback entity.Transa
 func (mb mockGroomingFalseTransactionRepository) UpdateStock(productID, stock int) error {
 	return nil
 }
-func (mb mockGroomingFalseTransactionRepository) GetAllUserTransaction(userID int) ([]entity.Transaction, error) {
+func (mb mockGroomingFalseTransactionRepository) GetAllUserTransaction(userID int) (
+	[]entity.Transaction, [][]entity.TransactionDetail, error,
+) {
 	return []entity.Transaction{
 		{
 			ID:            1,
@@ -695,10 +749,10 @@ func (mb mockGroomingFalseTransactionRepository) GetAllUserTransaction(userID in
 			TotalPrice:    100000,
 			PaymentStatus: "PENDING",
 		},
-	}, nil
+	}, [][]entity.TransactionDetail{}, nil
 }
 func (mb mockGroomingFalseTransactionRepository) GetAllStoreTransaction(userID int) (
-	[]entity.TransactionDetail, error,
+	[]entity.TransactionDetail, []entity.Transaction, error,
 ) {
 	return []entity.TransactionDetail{
 		{
@@ -707,5 +761,5 @@ func (mb mockGroomingFalseTransactionRepository) GetAllStoreTransaction(userID i
 			ProductID:     1,
 			Quantity:      10,
 		},
-	}, nil
+	}, []entity.Transaction{}, nil
 }
