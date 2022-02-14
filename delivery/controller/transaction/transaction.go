@@ -195,14 +195,7 @@ func (tc TransactionController) GetAllStoreTransaction() echo.HandlerFunc {
 
 		for i := 0; i < len(transaction); i++ {
 			transactionRes := TransactionResponse{
-				ID:            transaction[i].ID,
-				UserID:        transaction[i].UserID,
 				InvoiceID:     transaction[i].InvoiceID,
-				PaymentMethod: transaction[i].PaymentMethod,
-				PaymentURL:    transaction[i].PaymentURL,
-				PaidAt:        transaction[i].PaidAt,
-				TotalPrice:    transaction[i].TotalPrice,
-				PaymentStatus: transaction[i].PaymentStatus,
 			}
 
 			transactionDetailRes := []TransactionDetailResponse{}
