@@ -9,6 +9,7 @@ import (
 	"petshop/entity"
 	"petshop/helper"
 	transRepo "petshop/repository/transaction"
+	"strconv"
 	"strings"
 	"time"
 
@@ -183,8 +184,9 @@ func (tc TransactionController) GetAllUserTransaction() echo.HandlerFunc {
 
 func (tc TransactionController) GetAllStoreTransaction() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := middleware.ExtractTokenUserID(c)
-		transactionDetail, transaction, err := tc.transactionRepo.GetAllStoreTransaction(userID)
+		storeID, _ := strconv.Atoi(c.Param("id"))
+
+		transactionDetail, transaction, err := tc.transactionRepo.GetAllStoreTransaction(storeID)
 
 		if err != nil || len(transactionDetail) == 0 {
 			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
@@ -196,14 +198,7 @@ func (tc TransactionController) GetAllStoreTransaction() echo.HandlerFunc {
 
 		for i := 0; i < len(transaction); i++ {
 			transactionRes := TransactionResponse{
-				ID:            transaction[i].ID,
-				UserID:        transaction[i].UserID,
-				InvoiceID:     transaction[i].InvoiceID,
-				PaymentMethod: transaction[i].PaymentMethod,
-				PaymentURL:    transaction[i].PaymentURL,
-				PaidAt:        transaction[i].PaidAt,
-				TotalPrice:    transaction[i].TotalPrice,
-				PaymentStatus: transaction[i].PaymentStatus,
+				InvoiceID: transaction[i].InvoiceID,
 			}
 
 			transactionDetailRes := []TransactionDetailResponse{}

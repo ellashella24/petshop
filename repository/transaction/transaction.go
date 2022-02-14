@@ -66,13 +66,13 @@ func (tr *TransactionRepository) GetAllUserTransaction(userID int) (
 	}
 	return transaction, transactionDetail, nil
 }
-func (tr *TransactionRepository) GetAllStoreTransaction(userID int) (
+func (tr *TransactionRepository) GetAllStoreTransaction(storeID int) (
 	[]entity.TransactionDetail, []entity.Transaction, error,
 ) {
 	var transactionDetail []entity.TransactionDetail
 	var transactions []entity.Transaction
 	err := tr.db.Table("transaction_details").Joins("join products on transaction_details.product_id = products.id").Where(
-		"products.store_id = ?", userID,
+		"products.store_id = ?", storeID,
 	).Find(&transactionDetail).Error
 
 	if err != nil || len(transactionDetail) == 0 {
