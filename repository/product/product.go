@@ -28,7 +28,7 @@ func NewProductRepository(db *gorm.DB) *productRepository {
 func (gr *productRepository) GetAllProduct() ([]entity.Product, error) {
 	products := []entity.Product{}
 
-	err := gr.db.Where("category_id > 1").Find(&products).Error
+	err := gr.db.Preload("Category").Find(&products).Error
 
 	if err != nil || len(products) == 0 {
 		return products, errors.New("product not found")
@@ -40,9 +40,9 @@ func (gr *productRepository) GetAllProduct() ([]entity.Product, error) {
 func (gr *productRepository) GetProductByID(productID int) (entity.Product, error) {
 	product := entity.Product{}
 
-	err := gr.db.Where("id = ? AND category_id > 1", productID).Find(&product).Error
+	err := gr.db.Preload("Category").Where("id = ? ", productID).First(&product).Error
 
-	if err != nil || product.ID == 0 {
+	if err != nil {
 		return product, errors.New("product not found")
 	}
 
@@ -52,7 +52,7 @@ func (gr *productRepository) GetProductByID(productID int) (entity.Product, erro
 func (gr *productRepository) GetProductByStoreID(storeID int) ([]entity.Product, error) {
 	product := []entity.Product{}
 
-	err := gr.db.Where("store_id = ?", storeID).Find(&product).Error
+	err := gr.db.Preload("Category").Where("store_id = ?", storeID).Find(&product).Error
 
 	if err != nil || len(product) == 0 {
 		return product, errors.New("product not found")
@@ -74,15 +74,17 @@ func (gr *productRepository) GetStockHistory(productID int) ([]entity.StockHisto
 }
 
 func (gr *productRepository) CreateProduct(userID int, newProduct entity.Product) (entity.Product, error) {
-	// var store entity.Store
+	var store entity.Store
 	var stock entity.StockHistory
-	// err := gr.db.Where("user_id = ? and id = ?", userID, newProduct.StoreID).First(&store).Error
+	err := gr.db.Where("user_id = ?", userID).First(&store).Error
 
-	// if err != nil || store.ID == 0 {
-	// 	return newProduct, errors.New("store not found")
-	// }
+	if err != nil || store.ID == 0 {
+		return newProduct, errors.New("store not found")
+	}
 
-	err := gr.db.Save(&newProduct).Error
+	newProduct.StoreID = store.ID
+
+	err = gr.db.Save(&newProduct).Error
 	if err != nil {
 		return newProduct, err
 	}
