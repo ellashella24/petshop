@@ -29,19 +29,30 @@ func (uc *ProductController) GetAllProduct() echo.HandlerFunc {
 			return c.JSON(http.StatusNotFound, common.NewNotFoundResponse())
 		}
 
-		formatProduct := ProductFormatResponse{}
+		//formatProduct := ProductFormatResponse{}
 		formatProducts := []ProductFormatResponse{}
 
-		for i := 0; i < len(res); i++ {
-			formatProduct.ID = res[i].ID
-			formatProduct.Name = res[i].Name
-			formatProduct.Price = res[i].Price
-			formatProduct.ImageUrl = res[i].ImageURL
-			formatProduct.Stock = res[i].Stock
+		//for i := 0; i < len(res); i++ {
+		//	formatProduct.ID = res[i].ID
+		//	formatProduct.Name = res[i].Name
+		//	formatProduct.Price = res[i].Price
+		//	formatProduct.ImageUrl = res[i].ImageURL
+		//	formatProduct.Stock = res[i].Stock
+		//
+		//	formatProducts = append(formatProducts, formatProduct)
+		//}
 
-			formatProducts = append(formatProducts, formatProduct)
+		for _, item := range res {
+			formatProducts = append(
+				formatProducts, ProductFormatResponse{
+					ID:       item.ID,
+					Name:     item.Name,
+					Price:    item.Price,
+					Stock:    item.Stock,
+					Category: item.Category.Name,
+				},
+			)
 		}
-
 		return c.JSON(http.StatusOK, common.SuccessResponse(formatProducts))
 	}
 }
@@ -62,6 +73,7 @@ func (uc *ProductController) GetProductByID() echo.HandlerFunc {
 			Price:    res.Price,
 			Stock:    res.Stock,
 			ImageUrl: res.ImageURL,
+			Category: res.Category.Name,
 		}
 
 		return c.JSON(http.StatusOK, common.SuccessResponse(formatProduct))
@@ -111,6 +123,7 @@ func (uc *ProductController) GetProductStoreID() echo.HandlerFunc {
 			formatProduct.Name = res[i].Name
 			formatProduct.Price = res[i].Price
 			formatProduct.Stock = res[i].Stock
+			formatProduct.Category = res[i].Category.Name
 			formatProducts = append(formatProducts, formatProduct)
 		}
 
@@ -140,7 +153,6 @@ func (uc *ProductController) CreateProduct() echo.HandlerFunc {
 		newProduct := entity.Product{}
 		newProduct.Name = CreateProductReq.Name
 		newProduct.Price = CreateProductReq.Price
-		newProduct.StoreID = CreateProductReq.StoreID
 		newProduct.ImageURL = imageURL.ImageURL
 		newProduct.CategoryID = CreateProductReq.CategoryID
 		if CreateProductReq.CategoryID != 1 {
@@ -154,9 +166,9 @@ func (uc *ProductController) CreateProduct() echo.HandlerFunc {
 			service.Delete(destination)
 			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
 		}
-		formatProduct := ProductFormatResponse{}
+		formatProduct := CreateProductFormatResponse{}
 		if res.CategoryID != 1 {
-			formatProduct = ProductFormatResponse{
+			formatProduct = CreateProductFormatResponse{
 				ID:       res.ID,
 				Name:     res.Name,
 				Price:    res.Price,
@@ -164,7 +176,7 @@ func (uc *ProductController) CreateProduct() echo.HandlerFunc {
 				ImageUrl: res.ImageURL,
 			}
 		} else {
-			formatProduct = ProductFormatResponse{
+			formatProduct = CreateProductFormatResponse{
 				ID:       res.ID,
 				Name:     res.Name,
 				Price:    res.Price,
@@ -206,10 +218,10 @@ func (uc *ProductController) UpdateProduct() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
 		}
 
-		formatProduct := ProductFormatResponse{}
+		formatProduct := UpdateFormatResponse{}
 
 		if res.CategoryID != 1 {
-			formatProduct = ProductFormatResponse{
+			formatProduct = UpdateFormatResponse{
 				ID:       uint(productID),
 				Name:     res.Name,
 				Price:    res.Price,
@@ -217,7 +229,7 @@ func (uc *ProductController) UpdateProduct() echo.HandlerFunc {
 				ImageUrl: res.ImageURL,
 			}
 		} else {
-			formatProduct = ProductFormatResponse{
+			formatProduct = UpdateFormatResponse{
 				ID:       uint(productID),
 				Name:     res.Name,
 				Price:    res.Price,

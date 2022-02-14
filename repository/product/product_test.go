@@ -82,62 +82,69 @@ func TestSetup(t *testing.T) {
 func TestCreateProduct(t *testing.T) {
 	productRepo := NewProductRepository(db)
 
-	t.Run("1. Success Create Product", func(t *testing.T) {
-		newProduct := entity.Product{
-			Name:       "Whiskas",
-			Price:      100000,
-			Stock:      100,
-			StoreID:    1,
-			CategoryID: 2,
-		}
+	t.Run(
+		"1. Success Create Product", func(t *testing.T) {
+			newProduct := entity.Product{
+				Name:       "Whiskas",
+				Price:      100000,
+				Stock:      100,
+				StoreID:    1,
+				CategoryID: 2,
+			}
 
-		res, err := productRepo.CreateProduct(1, newProduct)
+			res, err := productRepo.CreateProduct(1, newProduct)
 
-		assert.Nil(t, err)
-		assert.Equal(t, "Whiskas", res.Name)
-	})
+			assert.Nil(t, err)
+			assert.Equal(t, "Whiskas", res.Name)
+		},
+	)
 
-	t.Run("2. Error Create Product", func(t *testing.T) {
-		newProduct := entity.Product{
-			Name:       "Whiskas",
-			Price:      100000,
-			Stock:      100,
-			StoreID:    0,
-			CategoryID: 100000,
-		}
+	t.Run(
+		"2. Error Create Product", func(t *testing.T) {
+			newProduct := entity.Product{
+				Name:       "Whiskas",
+				Price:      100000,
+				Stock:      100,
+				StoreID:    0,
+				CategoryID: 100000,
+			}
 
-		res, err := productRepo.CreateProduct(1, newProduct)
+			_, err := productRepo.CreateProduct(10, newProduct)
 
-		assert.NotNil(t, err)
-		assert.Equal(t, 0, int(res.ID))
-	})
+			assert.NotNil(t, err)
+		},
+	)
 }
 
 func TestGetAllProduct(t *testing.T) {
 	productRepo := NewProductRepository(db)
 
-	t.Run("1. Success get all product", func(t *testing.T) {
-		res, err := productRepo.GetAllProduct()
+	t.Run(
+		"1. Success get all product", func(t *testing.T) {
+			res, err := productRepo.GetAllProduct()
 
-		assert.Nil(t, err)
-		assert.Equal(t, "Whiskas", res[0].Name)
-	})
+			assert.Nil(t, err)
+			assert.Equal(t, "Whiskas", res[0].Name)
+		},
+	)
 
-	t.Run("2. Error get all product", func(t *testing.T) {
-		productRepo.DeleteProduct(1)
+	t.Run(
+		"2. Error get all product", func(t *testing.T) {
+			productRepo.DeleteProduct(1)
 
-		res, err := productRepo.GetAllProduct()
+			res, err := productRepo.GetAllProduct()
 
-		assert.NotNil(t, err)
-		assert.Equal(t, []entity.Product{}, res)
-	})
+			assert.NotNil(t, err)
+			assert.Equal(t, []entity.Product{}, res)
+		},
+	)
 }
 
 func TestGetProductByID(t *testing.T) {
 	productRepo := NewProductRepository(db)
 
 	newProduct := entity.Product{
-		Name:       "Whiskas",
+		Name:       "Excel",
 		Price:      100000,
 		Stock:      100,
 		StoreID:    1,
@@ -148,104 +155,124 @@ func TestGetProductByID(t *testing.T) {
 
 	// fmt.Println(productRepo.GetAllProduct())
 
-	t.Run("1. Success get product", func(t *testing.T) {
-		res, err := productRepo.GetProductByID(3)
+	t.Run(
+		"1. Success get product", func(t *testing.T) {
+			res, err := productRepo.GetProductByID(2)
 
-		assert.Nil(t, err)
-		assert.Equal(t, "Whiskas", res.Name)
-	})
+			assert.Nil(t, err)
+			assert.Equal(t, "Excel", res.Name)
+		},
+	)
 
-	t.Run("2. Error get product", func(t *testing.T) {
-		res, err := productRepo.GetProductByID(10000)
+	t.Run(
+		"2. Error get product", func(t *testing.T) {
+			res, err := productRepo.GetProductByID(10000)
 
-		assert.NotNil(t, err)
-		assert.Equal(t, "", res.Name)
-	})
+			assert.NotNil(t, err)
+			assert.Equal(t, "", res.Name)
+		},
+	)
 }
 
 func TestGetProductByStoreID(t *testing.T) {
 	productRepo := NewProductRepository(db)
 
-	t.Run("1. Success get product", func(t *testing.T) {
-		res, err := productRepo.GetProductByStoreID(1)
+	t.Run(
+		"1. Success get product", func(t *testing.T) {
+			res, err := productRepo.GetProductByStoreID(1)
 
-		assert.Nil(t, err)
-		assert.Equal(t, "Whiskas", res[0].Name)
-	})
+			assert.Nil(t, err)
+			assert.Equal(t, "Excel", res[0].Name)
+		},
+	)
 
-	t.Run("2. Error get product", func(t *testing.T) {
-		res, err := productRepo.GetProductByStoreID(10000)
+	t.Run(
+		"2. Error get product", func(t *testing.T) {
+			res, err := productRepo.GetProductByStoreID(10000)
 
-		assert.NotNil(t, err)
-		assert.Equal(t, []entity.Product([]entity.Product{}), res)
-	})
+			assert.NotNil(t, err)
+			assert.Equal(t, []entity.Product([]entity.Product{}), res)
+		},
+	)
 }
 
 func TestGetStockHistory(t *testing.T) {
 	productRepo := NewProductRepository(db)
 
-	t.Run("1. Success get product stock history ", func(t *testing.T) {
-		res, err := productRepo.GetStockHistory(1)
+	t.Run(
+		"1. Success get product stock history ", func(t *testing.T) {
+			res, err := productRepo.GetStockHistory(1)
 
-		assert.Nil(t, err)
-		assert.Equal(t, 100, res[0].Stock)
-		assert.Equal(t, 1, int(res[0].ProductID))
-	})
+			assert.Nil(t, err)
+			assert.Equal(t, 100, res[0].Stock)
+			assert.Equal(t, 1, int(res[0].ProductID))
+		},
+	)
 
-	t.Run("2. Error get product stock hsitory", func(t *testing.T) {
-		res, err := productRepo.GetStockHistory(10000)
+	t.Run(
+		"2. Error get product stock hsitory", func(t *testing.T) {
+			res, err := productRepo.GetStockHistory(10000)
 
-		assert.NotNil(t, err)
-		assert.Equal(t, []entity.StockHistory([]entity.StockHistory{}), res)
-	})
+			assert.NotNil(t, err)
+			assert.Equal(t, []entity.StockHistory([]entity.StockHistory{}), res)
+		},
+	)
 }
 
 func TestUpdateProduct(t *testing.T) {
 	productRepo := NewProductRepository(db)
 
-	t.Run("1. Success update product", func(t *testing.T) {
-		updatedProduct := entity.Product{
-			Name:       "Me-o",
-			Price:      100000,
-			Stock:      100,
-			StoreID:    1,
-			CategoryID: 2,
-		}
+	t.Run(
+		"1. Success update product", func(t *testing.T) {
+			updatedProduct := entity.Product{
+				Name:       "Me-o",
+				Price:      100000,
+				Stock:      100,
+				StoreID:    1,
+				CategoryID: 2,
+			}
 
-		res, err := productRepo.UpdateProduct(3, updatedProduct)
+			res, err := productRepo.UpdateProduct(2, updatedProduct)
 
-		assert.Nil(t, err)
-		assert.Equal(t, "Me-o", res.Name)
-	})
+			assert.Nil(t, err)
+			assert.Equal(t, "Me-o", res.Name)
+		},
+	)
 
-	t.Run("2. Error update product", func(t *testing.T) {
-		updatedProduct := entity.Product{
-			Name:       "Me-o",
-			Price:      100000,
-			Stock:      100,
-			StoreID:    1,
-			CategoryID: 2000000,
-		}
+	t.Run(
+		"2. Error update product", func(t *testing.T) {
+			updatedProduct := entity.Product{
+				Name:       "Me-o",
+				Price:      100000,
+				Stock:      100,
+				StoreID:    1,
+				CategoryID: 2000000,
+			}
 
-		res, err := productRepo.UpdateProduct(10000, updatedProduct)
+			res, err := productRepo.UpdateProduct(10000, updatedProduct)
 
-		assert.NotNil(t, err)
-		assert.Equal(t, "", res.Name)
-	})
+			assert.NotNil(t, err)
+			assert.Equal(t, "", res.Name)
+		},
+	)
 }
 
 func TestDeleteProduct(t *testing.T) {
 	productRepo := NewProductRepository(db)
 
-	t.Run("1. Success get product", func(t *testing.T) {
-		_, err := productRepo.DeleteProduct(3)
+	t.Run(
+		"1. Success get product", func(t *testing.T) {
+			_, err := productRepo.DeleteProduct(2)
 
-		assert.Nil(t, err)
-	})
+			assert.Nil(t, err)
+		},
+	)
 
-	t.Run("2. Error get product", func(t *testing.T) {
-		_, err := productRepo.DeleteProduct(10000)
+	t.Run(
+		"2. Error get product", func(t *testing.T) {
+			_, err := productRepo.DeleteProduct(10000)
 
-		assert.NotNil(t, err)
-	})
+			assert.NotNil(t, err)
+		},
+	)
 }

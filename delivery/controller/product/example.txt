@@ -1,0 +1,45 @@
+Fitur User 
+==============
+1. Register
+2. Login
+3. See profile
+4. Update profile
+5. Delete account
+
+Fitur Shop
+===============
+1. Create Shop
+2. Update Shop profile
+3. Delete Shop 
+4. See shop profile
+
+
+Fitur Grooming
+================
+1. Insert Grooming
+2. Update Grooming 
+3. Get all grooming (All shop)
+4. Get all grooming (By shop) 
+5.  Shop can get all grooming owned by shop
+6. Delete Grooming
+
+ 
+Fitur Pet
+===============
+1. Create Pet
+2. Update Pet profile
+3. Delete Pet 
+4. See Pet profile
+5. Get All pet owned by user
+
+
+Fitur Transaction
+====================
+1. Transaction History
+2. Transaction Recap
+3.	Shop can see all pet handled by shop
+4. Update grooming status
+5. User finished the transaction
+
+
+

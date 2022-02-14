@@ -11,6 +11,7 @@ type Product struct {
 	ImageURL          string
 	StoreID           uint
 	CategoryID        uint
+	Category          Category
 	Cart              []Cart
 	TransactionDetail []TransactionDetail
 	StockHistory      []StockHistory
