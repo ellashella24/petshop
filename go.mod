@@ -30,6 +30,7 @@ require (
 	github.com/richardlehane/msoleps v1.0.1 // indirect
 	github.com/xuri/efp v0.0.0-20210322160811-ab561f5b45e3 // indirect
 	github.com/xuri/excelize/v2 v2.5.0 // indirect
+	github.com/stretchr/objx v0.3.0 // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
