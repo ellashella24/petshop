@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"petshop/delivery/common"
@@ -285,6 +286,158 @@ func TestGetPetProfile(t *testing.T) {
 	})
 }
 
+func TestGetGroomingStatusByPetID(t *testing.T) {
+	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
+
+	requestBody, _ := json.Marshal(user.LoginFormatRequest{
+		Email:    "admin1@mail.com",
+		Password: "admin1",
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+	res := httptest.NewRecorder()
+
+	req.Header.Set("Content-Type", "application/json")
+	context := e.NewContext(req, res)
+	context.SetPath("/users/login")
+
+	userController := user.NewUserController(mockUserRepository{})
+	userController.Login()(context)
+
+	var response common.ResponseSuccess
+
+	json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+	data := (response.Data).(map[string]interface{})
+
+	jwtToken = data["token"].(string)
+
+	t.Run("1. Error get grooming status", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		res := httptest.NewRecorder()
+
+		context := e.NewContext(req, res)
+		context.SetPath("/user/grooming_status/pet")
+		context.SetParamNames("id")
+		context.SetParamValues("1")
+
+		petController := NewPetController(mockFalsePetRepository{})
+		petController.GetGroomingStatusByPetID()(context)
+
+		var response common.ResponseSuccess
+
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "Can't get grooming status", response.Message)
+	})
+
+	t.Run("2. Success get grooming status", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		res := httptest.NewRecorder()
+
+		context := e.NewContext(req, res)
+		context.SetPath("/user/grooming_status/pet")
+		context.SetParamNames("id")
+		context.SetParamValues("1")
+
+		petController := NewPetController(mockPetRepository{})
+		petController.GetGroomingStatusByPetID()(context)
+
+		var response common.ResponseSuccess
+
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "Successful Operation", response.Message)
+	})
+}
+
+func TestUpdateGroomingStatus(t *testing.T) {
+	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
+
+	requestBody, _ := json.Marshal(user.LoginFormatRequest{
+		Email:    "admin1@mail.com",
+		Password: "admin1",
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+	res := httptest.NewRecorder()
+
+	req.Header.Set("Content-Type", "application/json")
+	context := e.NewContext(req, res)
+	context.SetPath("/users/login")
+
+	userController := user.NewUserController(mockUserRepository{})
+	userController.Login()(context)
+
+	var response common.ResponseSuccess
+
+	json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+	data := (response.Data).(map[string]interface{})
+
+	jwtToken = data["token"].(string)
+
+	t.Run("1. Error get grooming status", func(t *testing.T) {
+		body := new(bytes.Buffer)
+
+		writer := multipart.NewWriter(body)
+
+		writer.WriteField("pet_id", "1000")
+		writer.WriteField("store_id", "1000")
+
+		writer.Close()
+
+		req := httptest.NewRequest(http.MethodPut, "/", body)
+		res := httptest.NewRecorder()
+		req.Header.Add("Content-Type", writer.FormDataContentType())
+
+		context := e.NewContext(req, res)
+		context.SetPath("/user/grooming_status/pet")
+		context.SetParamNames("id")
+		context.SetParamValues("1")
+
+		petController := NewPetController(mockFalsePetRepository{})
+		petController.UpdateFinalGroomingStatus()(context)
+
+		var response common.ResponseSuccess
+
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "Can't get grooming status", response.Message)
+	})
+
+	t.Run("2. Success get grooming status", func(t *testing.T) {
+		body := new(bytes.Buffer)
+
+		writer := multipart.NewWriter(body)
+
+		writer.WriteField("pet_id", "1")
+		writer.WriteField("store_id", "1")
+
+		writer.Close()
+
+		req := httptest.NewRequest(http.MethodPut, "/", body)
+		res := httptest.NewRecorder()
+		req.Header.Add("Content-Type", writer.FormDataContentType())
+
+		context := e.NewContext(req, res)
+		context.SetPath("/user/grooming_status/pet")
+		context.SetParamNames("id")
+		context.SetParamValues("1")
+
+		petController := NewPetController(mockPetRepository{})
+		petController.UpdateFinalGroomingStatus()(context)
+
+		var response common.ResponseSuccess
+
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "Successful Operation", response.Message)
+	})
+}
+
 func TestUpdatePetProfile(t *testing.T) {
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
@@ -544,17 +697,27 @@ func (mc mockPetRepository) GetPetProfileByID(petID, userID int) (entity.Pet, er
 		ID: 1, Name: "city1", UserID: 1}, nil
 }
 
-func (mu mockPetRepository) CreatePet(newPet entity.Pet) (entity.Pet, error) {
+func (mc mockPetRepository) GetGroomingStatusByPetID(petID, userID int) (entity.GroomingStatus, error) {
+	return entity.GroomingStatus{
+		ID: 1, Status: "TELAH DIBAYAR", PetID: 1}, nil
+}
+
+func (mc mockPetRepository) UpdateFinalGroomingStatus(petID, userID int) (entity.GroomingStatus, error) {
+	return entity.GroomingStatus{
+		ID: 1, Status: "SELESAI", PetID: 1}, nil
+}
+
+func (mc mockPetRepository) CreatePet(newPet entity.Pet) (entity.Pet, error) {
 	return entity.Pet{
 		ID: 1, Name: "city1", UserID: 1}, nil
 }
 
-func (mu mockPetRepository) UpdatePetProfile(petID, userID int, updatedPet entity.Pet) (entity.Pet, error) {
+func (mc mockPetRepository) UpdatePetProfile(petID, userID int, updatedPet entity.Pet) (entity.Pet, error) {
 	return entity.Pet{
 		ID: 1, Name: "city1 new", UserID: 1}, nil
 }
 
-func (mu mockPetRepository) DeletePet(petID, userID int) (entity.Pet, error) {
+func (mc mockPetRepository) DeletePet(petID, userID int) (entity.Pet, error) {
 	return entity.Pet{
 		ID: 0, Name: "", UserID: 0}, nil
 }
@@ -569,6 +732,16 @@ func (mfc mockFalsePetRepository) GetAllPetByUserID(userID int) ([]entity.Pet, e
 func (mfc mockFalsePetRepository) GetPetProfileByID(petID, userID int) (entity.Pet, error) {
 	return entity.Pet{
 		ID: 0, Name: "", UserID: 0}, errors.New("can't get city data")
+}
+
+func (mfc mockFalsePetRepository) GetGroomingStatusByPetID(petID, userID int) (entity.GroomingStatus, error) {
+	return entity.GroomingStatus{
+		ID: 0, Status: "", PetID: 0}, errors.New("not found grooming status")
+}
+
+func (mfc mockFalsePetRepository) UpdateFinalGroomingStatus(petID, userID int) (entity.GroomingStatus, error) {
+	return entity.GroomingStatus{
+		ID: 0, Status: "", PetID: 0}, errors.New("not found grooming status")
 }
 
 func (mfu mockFalsePetRepository) CreatePet(newPet entity.Pet) (entity.Pet, error) {

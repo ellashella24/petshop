@@ -1,16 +1,17 @@
 package service
 
 import (
-	"github.com/jlaffaye/ftp"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
+	"errors"
 	"mime/multipart"
 	"net/http"
 	"petshop/constants"
-	"petshop/delivery/common"
 	"petshop/entity"
 	"strings"
 	"time"
+
+	"github.com/jlaffaye/ftp"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 )
 
 func Upload(c echo.Context, userID string, file *multipart.FileHeader) (entity.Product, error) {
@@ -30,11 +31,14 @@ func Upload(c echo.Context, userID string, file *multipart.FileHeader) (entity.P
 
 	contentType := http.DetectContentType(buffer)
 	if contentType != "image/png" && contentType != "image/jpeg" {
-
-		return products, c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
+		return products, errors.New("the file image not in jpg / png format")
+		// return products, c.JSON(http.StatusBadRequest, common.ErrorResponse(400, fmt.Sprint(err)))
+		// return products, c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
 	}
 
-	conn, err := ftp.Dial(constants.FTP_ADDR)
+	// conn, err := ftp.Dial(constants.FTP_ADDR)
+	conn, _ := ftp.Dial(constants.FTP_ADDR)
+	// err := conn.Login(constants.FTP_USERNAME, constants.FTP_PASSWORD)
 	err = conn.Login(constants.FTP_USERNAME, constants.FTP_PASSWORD)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -55,9 +59,10 @@ func Upload(c echo.Context, userID string, file *multipart.FileHeader) (entity.P
 	return products, nil
 }
 func Delete(file string) error {
-
-	conn, err := ftp.Dial(constants.FTP_ADDR)
-	err = conn.Login(constants.FTP_USERNAME, constants.FTP_PASSWORD)
+	// conn, err := ftp.Dial(constants.FTP_ADDR)
+	conn, _ := ftp.Dial(constants.FTP_ADDR)
+	// err := conn.Login(constants.FTP_USERNAME, constants.FTP_PASSWORD)
+	err := conn.Login(constants.FTP_USERNAME, constants.FTP_PASSWORD)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -72,8 +77,10 @@ func Delete(file string) error {
 }
 
 func DirReset() {
-	conn, err := ftp.Dial(constants.FTP_ADDR)
-	err = conn.Login(constants.FTP_USERNAME, constants.FTP_PASSWORD)
+	// conn, err := ftp.Dial(constants.FTP_ADDR)
+	conn, _ := ftp.Dial(constants.FTP_ADDR)
+	// err := conn.Login(constants.FTP_USERNAME, constants.FTP_PASSWORD)
+	err := conn.Login(constants.FTP_USERNAME, constants.FTP_PASSWORD)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
