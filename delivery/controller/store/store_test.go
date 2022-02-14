@@ -448,6 +448,72 @@ func TestUpdateGroomingStatus(t *testing.T) {
 	})
 }
 
+func TestExportExcel(t *testing.T) {
+	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
+
+	requestBody, _ := json.Marshal(user.LoginFormatRequest{
+		Email:    "admin1@mail.com",
+		Password: "admin1",
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+	res := httptest.NewRecorder()
+
+	req.Header.Set("Content-Type", "application/json")
+	context := e.NewContext(req, res)
+	context.SetPath("/users/login")
+
+	userController := user.NewUserController(mockUserRepository{})
+	userController.Login()(context)
+
+	var response common.ResponseSuccess
+
+	json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+	data := (response.Data).(map[string]interface{})
+
+	jwtToken = data["token"].(string)
+
+	t.Run("1. Success export excel", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		res := httptest.NewRecorder()
+
+		context := e.NewContext(req, res)
+		context.SetPath("/export/transactions/store")
+		context.SetParamNames("id")
+		context.SetParamValues("1")
+
+		storeController := NewStoreController(mockStoreRepository{})
+		storeController.ExportExcel()(context)
+
+		var response common.ResponseSuccess
+
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "Successful Operation", response.Message)
+	})
+
+	t.Run("2. Error export excel", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		res := httptest.NewRecorder()
+
+		context := e.NewContext(req, res)
+		context.SetPath("/export/transactions/store")
+		context.SetParamNames("id")
+		context.SetParamValues("1")
+
+		storeController := NewStoreController(mockFalseStoreRepository{})
+		storeController.ExportExcel()(context)
+
+		var response common.DefaultResponse
+
+		json.Unmarshal([]byte(res.Body.Bytes()), &response)
+
+		assert.Equal(t, "transaction not found", response.Message)
+	})
+}
+
 func TestUpdateStoreProfile(t *testing.T) {
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
@@ -549,13 +615,13 @@ func TestUpdateStoreProfile(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", jwtToken))
 		context := e.NewContext(req, res)
-		context.SetPath("/city/profile")
+		context.SetPath("/store/profile")
 		context.SetParamNames("id")
 		context.SetParamValues("1")
 
-		cityController := NewStoreController(mockStoreRepository{})
+		storeController := NewStoreController(mockStoreRepository{})
 
-		err := (mw.IsAdmin)(cityController.UpdateStoreProfile())(context)
+		err := (mw.IsAdmin)(storeController.UpdateStoreProfile())(context)
 
 		if err != nil {
 			fmt.Println(err)
@@ -714,9 +780,18 @@ func (mc mockStoreRepository) GetStoreProfile(storeID, userID int) (entity.Store
 		ID: 1, Name: "city1", UserID: 1}, nil
 }
 
-func (mc mockStoreRepository) GetListTransactionByStoreID(storeID int) ([]entity.Transaction, error) {
+func (mc mockStoreRepository) GetListTransactionByStoreID(storeID int) ([]entity.Transaction, []entity.TransactionDetail, []entity.Product, error) {
 	return []entity.Transaction{
-		{ID: 1, UserID: 1, InvoiceID: "Invoice-1", PaymentMethod: "Bank Transfer", PaidAt: time.Now(), TotalPrice: 100000, PaymentStatus: "Paid"}}, nil
+			{ID: 1, UserID: 1, InvoiceID: "Invoice-1", PaymentMethod: "Bank Transfer", PaidAt: time.Now(), TotalPrice: 100000, PaymentStatus: "Paid"}},
+		[]entity.TransactionDetail{
+			{ID: 1, TransactionID: 1, ProductID: 1, Quantity: 1}},
+		[]entity.Product{
+			{ID: 1, Name: "Grooming", Price: 100000, Stock: 1, StoreID: 1, CategoryID: 1}},
+		nil
+}
+
+func (mc mockStoreRepository) ExportExcel(transactionData []entity.Transaction, transactionDetail []entity.TransactionDetail, productData []entity.Product) error {
+	return nil
 }
 
 func (mc mockStoreRepository) GetGroomingStatusByPetID(storeID, petID int) (entity.GroomingStatus, error) {
@@ -766,9 +841,14 @@ func (mc mockFalseStoreRepository) GetGroomingStatusByPetID(storeID, petID int) 
 		ID: 0, Status: "", PetID: 0}, errors.New("not found grooming status")
 }
 
-func (mc mockFalseStoreRepository) GetListTransactionByStoreID(storeID int) ([]entity.Transaction, error) {
+func (mc mockFalseStoreRepository) GetListTransactionByStoreID(storeID int) ([]entity.Transaction, []entity.TransactionDetail, []entity.Product, error) {
 	return []entity.Transaction{
-		{ID: 0, UserID: 0, InvoiceID: "", PaymentMethod: "", TotalPrice: 0, PaymentStatus: ""}}, errors.New("not found transactions")
+			{ID: 0, UserID: 0, InvoiceID: "", PaymentMethod: "", PaidAt: time.Now(), TotalPrice: 0, PaymentStatus: ""}},
+		[]entity.TransactionDetail{
+			{ID: 0, TransactionID: 0, ProductID: 0, Quantity: 0}},
+		[]entity.Product{
+			{ID: 0, Name: "", Price: 0, Stock: 0, StoreID: 0, CategoryID: 0}},
+		errors.New("not found transaction")
 }
 
 func (mc mockFalseStoreRepository) UpdateGroomingStatus(storeID, petID int) (entity.GroomingStatus, error) {

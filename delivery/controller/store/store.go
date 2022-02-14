@@ -6,6 +6,7 @@ import (
 	"petshop/delivery/middleware"
 	"petshop/entity"
 	"petshop/repository/store"
+	"petshop/service"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -199,5 +200,43 @@ func (sc *StoreController) UpdateGroomingStatus() echo.HandlerFunc {
 		response.Status = res.Status
 
 		return c.JSON(http.StatusOK, common.SuccessResponse(response))
+	}
+}
+
+func (sc *StoreController) GetListTransactiontByStoreID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		storeID, _ := strconv.Atoi(c.Param("id"))
+
+		transactionData, transactionDetailData, productData, err := sc.storeRepo.GetListTransactionByStoreID(int(storeID))
+
+		if err != nil {
+			return c.JSON(http.StatusNotFound, common.ErrorResponse(404, "transaction not found"))
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"transactionData":       transactionData,
+			"transactionDetailData": transactionDetailData,
+			"productData":           productData,
+		})
+	}
+}
+
+func (sc *StoreController) ExportExcel() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		storeID, _ := strconv.Atoi(c.Param("id"))
+
+		transactionData, transactionDetailData, productData, err := sc.storeRepo.GetListTransactionByStoreID(storeID)
+
+		if err != nil {
+			return c.JSON(http.StatusNotFound, common.ErrorResponse(404, "transaction not found"))
+		}
+
+		err = service.ExportExcel(transactionData, transactionDetailData, productData)
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't export Excel"))
+		}
+
+		return c.JSON(http.StatusOK, common.NewSuccessOperationResponse())
 	}
 }

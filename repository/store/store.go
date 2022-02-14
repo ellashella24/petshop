@@ -14,7 +14,7 @@ type Store interface {
 	GetStoreProfile(storeID, userID int) (entity.Store, error)
 	UpdateStoreProfile(storeID, userID int, updatedStore entity.Store) (entity.Store, error)
 	DeleteStore(storeID, userID int) (entity.Store, error)
-	GetListTransactionByStoreID(storeID int) ([]entity.Transaction, error)
+	GetListTransactionByStoreID(storeID int) ([]entity.Transaction, []entity.TransactionDetail, []entity.Product, error)
 	GetGroomingStatusByPetID(petID, storeID int) (entity.GroomingStatus, error)
 	UpdateGroomingStatus(petID, storeID int) (entity.GroomingStatus, error)
 }
@@ -101,16 +101,37 @@ func (sr *storeRepository) DeleteStore(storeID, userID int) (entity.Store, error
 	return store, nil
 }
 
-func (sr *storeRepository) GetListTransactionByStoreID(storeID int) ([]entity.Transaction, error) {
-	transactions := []entity.Transaction{}
+func (sr *storeRepository) GetListTransactionByStoreID(storeID int) ([]entity.Transaction, []entity.TransactionDetail, []entity.Product, error) {
+	var transactionDetail []entity.TransactionDetail
+	var transactions []entity.Transaction
+	var products []entity.Product
 
-	sr.db.Select("transactions.invoice_id, transactions.user_id, transactions.total_price, transactions.payment_status, transactions.paid_at, transactions.payment_method").Table("transactions").Joins("join transaction_details ON transactions.id = transaction_details.transaction_id").Joins("join products ON transaction_details.product_id = products.id").Joins("join stores ON products.store_id = stores.id").Where("stores.id = ?", storeID).Group("transactions.invoice_id").Find(&transactions)
+	err := sr.db.Table("transaction_details").Joins("join products on transaction_details.product_id = products.id").Where("products.store_id = ?", storeID).Find(&transactionDetail).Error
 
-	if len(transactions) == 0 {
-		return transactions, errors.New("transaction not found")
+	if err != nil || len(transactionDetail) == 0 {
+		return transactions, transactionDetail, products, errors.New("not found")
 	}
 
-	return transactions, nil
+	for i := range transactionDetail {
+		var transaction entity.Transaction
+		var product entity.Product
+
+		sr.db.Where("id", transactionDetail[i].TransactionID).First(&transaction)
+
+		sr.db.Where("id", transactionDetail[i].ProductID).First(&product)
+
+		if len(transactions) == 0 {
+			transactions = append(transactions, transaction)
+		}
+
+		if transactions[len(transactions)-1].ID != transaction.ID {
+			transactions = append(transactions, transaction)
+		}
+
+		products = append(products, product)
+	}
+
+	return transactions, transactionDetail, products, nil
 }
 
 func (sr *storeRepository) UpdateGroomingStatus(petID, storeID int) (entity.GroomingStatus, error) {
