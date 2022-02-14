@@ -24,18 +24,6 @@ func NewUserRepository(db *gorm.DB) *userRepository {
 	return &userRepository{db}
 }
 
-func (ur *userRepository) FindCityByID(cityID int) (entity.City, error) {
-	city := entity.City{}
-
-	err := ur.db.Where("id = ?", cityID).First(&city).Error
-
-	if err != nil || city.ID == 0 {
-		return city, err
-	}
-
-	return city, nil
-}
-
 func (ur *userRepository) CreateUser(newUser entity.User) (entity.User, error) {
 	err := ur.db.Save(&newUser).Error
 
