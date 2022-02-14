@@ -2,8 +2,9 @@ package cart
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"petshop/entity"
+
+	"gorm.io/gorm"
 )
 
 type Cart interface {

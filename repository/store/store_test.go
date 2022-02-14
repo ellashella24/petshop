@@ -187,17 +187,21 @@ func TestGetListTransactionByStoreID(t *testing.T) {
 	db.Create(&transactionDetail1)
 
 	t.Run("1. Success get list transaction", func(t *testing.T) {
-		res, err := storeRepo.GetListTransactionByStoreID(1)
+		transcation, transactionDetail, product, err := storeRepo.GetListTransactionByStoreID(1)
 
 		assert.Nil(t, err)
-		assert.Equal(t, "Invoice-1", res[0].InvoiceID)
+		assert.Equal(t, "Invoice-1", transcation[0].InvoiceID)
+		assert.Equal(t, 1, int(transactionDetail[0].ProductID))
+		assert.Equal(t, 1, int(product[0].ID))
 	})
 
 	t.Run("2. Error get list transaction", func(t *testing.T) {
-		res, err := storeRepo.GetListTransactionByStoreID(10000)
+		transcation, transactionDetail, product, err := storeRepo.GetListTransactionByStoreID(1000)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, []entity.Transaction([]entity.Transaction{}), res)
+		assert.Equal(t, []entity.Transaction([]entity.Transaction(nil)), transcation)
+		assert.Equal(t, []entity.TransactionDetail([]entity.TransactionDetail{}), transactionDetail)
+		assert.Equal(t, []entity.Product([]entity.Product(nil)), product)
 	})
 }
 

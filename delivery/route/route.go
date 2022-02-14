@@ -16,10 +16,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-
-
-func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController, categoryCtrl *category.CategoryController, tc *transaction.TransactionController, cityCtrl *city.CityController, petCtrl *pet.PetController, storeCtrl *store.StoreController,  cc *cart.CartController) {
-
+func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.ProductController, categoryCtrl *category.CategoryController, tc *transaction.TransactionController, cityCtrl *city.CityController, petCtrl *pet.PetController, storeCtrl *store.StoreController, cc *cart.CartController) {
 
 	eAuth := e.Group("")
 	eAuth.Use(middleware.JWT([]byte(constant.SecretKey)))
@@ -32,6 +29,9 @@ func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.Produ
 	eAuth.GET("/user/store/profile/:id", storeCtrl.GetStoreProfile())
 	eAuth.PUT("/user/store/profile/:id", storeCtrl.UpdateStoreProfile())
 	eAuth.DELETE("/user/store/:id", storeCtrl.DeleteStore())
+	e.GET("/export/transactions/store/:id", storeCtrl.ExportExcel())
+	e.PUT("/store/grooming_status/pet", storeCtrl.UpdateGroomingStatus())
+	e.GET("/store/grooming_status/pet", storeCtrl.GetGroomingStatusByPetID())
 
 	// Pet Route Path
 	eAuth.POST("/user/pet", petCtrl.CreatePet())
@@ -39,6 +39,8 @@ func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.Produ
 	eAuth.GET("/user/pet/profile/:id", petCtrl.GetPetProfile())
 	eAuth.PUT("/user/pet/profile/:id", petCtrl.UpdatePetProfile())
 	eAuth.DELETE("/user/pet/:id", petCtrl.DeletePet())
+	e.PUT("/user/grooming_status/pet", petCtrl.UpdateFinalGroomingStatus())
+	e.GET("/user/grooming_status/pet", petCtrl.GetGroomingStatusByPetID())
 
 	// City Route Path
 	eAuthAdmin.POST("/city", cityCtrl.CreateCity())
@@ -78,7 +80,7 @@ func RegisterPath(e *echo.Echo, userCtrl *user.UserController, pc *product.Produ
 
 	//cart
 	e.POST("/cart", cc.Create(), middleware.JWT([]byte("secret123")))
-  e.PUT("/cart", cc.Update(), middleware.JWT([]byte("secret123")))
+	e.PUT("/cart", cc.Update(), middleware.JWT([]byte("secret123")))
 	e.POST("/cart/checkout", cc.CartTansaction(), middleware.JWT([]byte("secret123")))
 	e.GET("/cart", cc.GetAll(), middleware.JWT([]byte("secret123")))
 	e.DELETE("/cart/:id", cc.Delete(), middleware.JWT([]byte("secret123")))
