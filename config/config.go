@@ -43,7 +43,7 @@ func initConfig() *AppConfig {
 	defaultConfig.Driver = getEnv("DRIVER", "mysql")
 	defaultConfig.Name = getEnv("DB_NAME", "petshop")
 	defaultConfig.Address = getEnv("ADDRESS", "localhost")
-	defaultConfig.DB_Port = 3307
+	defaultConfig.DB_Port = 3306
 	defaultConfig.Username = getEnv("DB_USERNAME", "root")
 	defaultConfig.Password = getEnv("DB_PASSWORD", "admin123")
 
