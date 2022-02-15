@@ -3,7 +3,7 @@ package transaction
 import "time"
 
 type GetStoreTransactionResponse struct {
-	Transaction       TransactionResponse
+	Transaction       StoreTransactionResponse
 	TransactionDetail []TransactionDetailResponse
 }
 
@@ -21,6 +21,12 @@ type TransactionResponse struct {
 	PaidAt        time.Time `json:"paidAt"`
 	TotalPrice    int       `json:"totalPrice"`
 	PaymentStatus string    `json:"paymentStatus"`
+}
+
+type StoreTransactionResponse struct {
+	ID            uint   `json:"ID"`
+	InvoiceID     string `json:"invoiceID"`
+	PaymentStatus string `json:"paymentStatus"`
 }
 
 type TransactionDetailResponse struct {

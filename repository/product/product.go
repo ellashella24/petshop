@@ -118,13 +118,15 @@ func (gr *productRepository) UpdateProduct(productID int, updatedProduct entity.
 	}
 
 	if updatedProduct.Stock != 0 {
-		updatedProduct.Stock = product.Stock + updatedProduct.Stock
+
 		stock = entity.StockHistory{
 			ProductID: product.ID,
 			Stock:     updatedProduct.Stock,
 		}
 
 		gr.db.Save(&stock)
+
+		updatedProduct.Stock = updatedProduct.Stock + product.Stock
 
 		// err = gr.db.Save(&stock).Error
 		// if err != nil {

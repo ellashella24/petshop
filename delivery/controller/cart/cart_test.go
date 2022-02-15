@@ -197,7 +197,7 @@ func TestCreate(t *testing.T) {
 
 			json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			assert.Equal(t, "Internal Server Error", response.Message)
+			assert.Equal(t, "Bad Request", response.Message)
 		},
 	)
 	t.Run(
@@ -230,7 +230,7 @@ func TestCreate(t *testing.T) {
 
 			json.Unmarshal([]byte(res.Body.Bytes()), &response)
 
-			assert.Equal(t, "Internal Server Error", response.Message)
+			assert.Equal(t, "Bad Request", response.Message)
 		},
 	)
 }

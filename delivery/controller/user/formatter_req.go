@@ -13,8 +13,8 @@ type LoginFormatRequest struct {
 }
 
 type UpdateFormatRequest struct {
-	Name     string `json:"name" form:"name" validate:"required"`
-	Email    string `json:"email" form:"email" validate:"email,required"`
-	Password string `json:"password" form:"password" validate:"required"`
-	CityID   uint   `json:"city_id" form:"city_id" validate:"required"`
+	Name     string `json:"name" form:"name" `
+	Email    string `json:"email" form:"email"`
+	Password string `json:"password" form:"password" `
+	CityID   uint   `json:"city_id" form:"city_id" `
 }

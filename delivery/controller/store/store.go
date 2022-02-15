@@ -203,24 +203,6 @@ func (sc *StoreController) UpdateGroomingStatus() echo.HandlerFunc {
 	}
 }
 
-func (sc *StoreController) GetListTransactiontByStoreID() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		storeID, _ := strconv.Atoi(c.Param("id"))
-
-		transactionData, transactionDetailData, productData, err := sc.storeRepo.GetListTransactionByStoreID(int(storeID))
-
-		if err != nil {
-			return c.JSON(http.StatusNotFound, common.ErrorResponse(404, "transaction not found"))
-		}
-
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"transactionData":       transactionData,
-			"transactionDetailData": transactionDetailData,
-			"productData":           productData,
-		})
-	}
-}
-
 func (sc *StoreController) ExportExcel() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		storeID, _ := strconv.Atoi(c.Param("id"))

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 	"petshop/delivery/common"
 	"petshop/delivery/middleware"
@@ -30,7 +31,6 @@ func (uc *UserController) Register() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get the input"))
 		}
-
 
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(userRegisterReq.Password), bcrypt.MinCost)
 
@@ -74,6 +74,7 @@ func (uc *UserController) Login() echo.HandlerFunc {
 			return c.JSON(http.StatusNotFound, common.ErrorResponse(404, "User not found"))
 		}
 
+		fmt.Println(res.Password)
 		err = bcrypt.CompareHashAndPassword([]byte(res.Password), []byte(userLoginReq.Password))
 
 		if err != nil {
@@ -125,15 +126,17 @@ func (uc *UserController) UpdateProfile() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get the input"))
 		}
 
+		if userUpdateReq.Password != "" {
+			password, _ := bcrypt.GenerateFromPassword([]byte(userUpdateReq.Password), bcrypt.MinCost)
+			userUpdateReq.Password = string(password)
+		}
 
-		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(userUpdateReq.Password), bcrypt.MinCost)
-
-		updatedUser := entity.User{}
-		updatedUser.ID = uint(userID)
-		updatedUser.Name = userUpdateReq.Name
-		updatedUser.Email = userUpdateReq.Email
-		updatedUser.Password = string(hashedPassword)
-		updatedUser.CityID = userUpdateReq.CityID
+		updatedUser := entity.User{
+			Name:     userUpdateReq.Name,
+			Email:    userUpdateReq.Email,
+			Password: userUpdateReq.Password,
+			CityID:   userUpdateReq.CityID,
+		}
 
 		res, err := uc.userRepo.UpdateUser(userID, updatedUser)
 

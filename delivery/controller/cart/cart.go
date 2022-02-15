@@ -196,7 +196,7 @@ func (cc CartController) Create() echo.HandlerFunc {
 			_, err = cc.CartRepo.Create(cartData)
 			if err != nil {
 				return c.JSON(
-					http.StatusInternalServerError, common.NewInternalServerErrorResponse(),
+					http.StatusBadRequest, common.NewBadRequestResponse(),
 				)
 			}
 		} else {
@@ -204,8 +204,9 @@ func (cc CartController) Create() echo.HandlerFunc {
 			_, err = cc.CartRepo.Update(cartData)
 			if err != nil {
 				return c.JSON(
-					http.StatusInternalServerError, common.ErrorResponse(http.StatusInternalServerError, err.Error()),
+					http.StatusInternalServerError, common.NewInternalServerErrorResponse(),
 				)
+
 			}
 		}
 

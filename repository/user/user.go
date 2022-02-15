@@ -8,7 +8,6 @@ import (
 )
 
 type User interface {
-	FindCityByID(cityID int) (entity.City, error)
 	CreateUser(newUser entity.User) (entity.User, error)
 	GetUserByEmail(email string) (entity.User, error)
 	GetUserByID(userID int) (entity.User, error)

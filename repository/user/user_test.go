@@ -203,7 +203,6 @@ func TestDeleteUser(t *testing.T) {
 
 	t.Run(
 		"2. Error delete user", func(t *testing.T) {
-			db.Migrator().DropTable(&entity.User{})
 
 			_, err := userRepo.DeleteUser(100)
 

@@ -6,8 +6,8 @@ type CreateStoreFormatRequest struct {
 }
 
 type UpdateStoreFormatRequest struct {
-	Name   string `json:"name" form:"name" validate:"required"`
-	CityID uint   `json:"city_id" form:"city_id" validate:"required"`
+	Name   string `json:"name" form:"name" `
+	CityID uint   `json:"city_id" form:"city_id"`
 }
 
 type GetGroomingStatusFormatRequest struct {

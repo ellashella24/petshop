@@ -67,6 +67,7 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 				}
 			}
 			//Check Pet
+
 			if category.Name == "Grooming" && transactionRequest[i].PetID == 0 {
 
 				return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
@@ -77,6 +78,10 @@ func (tc TransactionController) Create() echo.HandlerFunc {
 				if err != nil {
 					return c.JSON(http.StatusBadRequest, common.NewBadRequestResponse())
 				}
+			}
+
+			if category.Name == "Grooming" {
+				transactionRequest[i].Quantity = 1
 			}
 
 			invoiceItem = xendit.InvoiceItem{
@@ -197,8 +202,10 @@ func (tc TransactionController) GetAllStoreTransaction() echo.HandlerFunc {
 		counter := 0
 
 		for i := 0; i < len(transaction); i++ {
-			transactionRes := TransactionResponse{
-				InvoiceID: transaction[i].InvoiceID,
+			transactionRes := StoreTransactionResponse{
+				ID:            transaction[i].ID,
+				InvoiceID:     transaction[i].InvoiceID,
+				PaymentStatus: transaction[i].PaymentStatus,
 			}
 
 			transactionDetailRes := []TransactionDetailResponse{}
@@ -211,12 +218,10 @@ func (tc TransactionController) GetAllStoreTransaction() echo.HandlerFunc {
 						ProductID:     transactionDetail[j].ProductID,
 						Quantity:      transactionDetail[j].Quantity,
 					}
-					counter++
-					transactionDetailRes = append(transactionDetailRes, transactionDetailData)
-				} else {
-					break
-				}
 
+					transactionDetailRes = append(transactionDetailRes, transactionDetailData)
+					counter++
+				}
 			}
 
 			respon = GetStoreTransactionResponse{

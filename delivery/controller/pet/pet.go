@@ -152,12 +152,13 @@ func (pc *PetController) DeletePet() echo.HandlerFunc {
 func (pc *PetController) GetGroomingStatusByPetID() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		getGroomingReq := GetGroomingStatusFormatRequest{}
+		userID := middleware.ExtractTokenUserID(c)
 
 		c.Bind(&getGroomingReq)
 
 		c.Validate(&getGroomingReq)
 
-		res, err := pc.petRepo.GetGroomingStatusByPetID(int(getGroomingReq.PetID), int(getGroomingReq.UserID))
+		res, err := pc.petRepo.GetGroomingStatusByPetID(int(getGroomingReq.PetID), userID)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get grooming status"))
@@ -175,12 +176,13 @@ func (pc *PetController) GetGroomingStatusByPetID() echo.HandlerFunc {
 func (pc *PetController) UpdateFinalGroomingStatus() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		getGroomingReq := GetGroomingStatusFormatRequest{}
+		userID := middleware.ExtractTokenUserID(c)
 
 		c.Bind(&getGroomingReq)
 
 		c.Validate(&getGroomingReq)
 
-		res, err := pc.petRepo.UpdateFinalGroomingStatus(int(getGroomingReq.PetID), int(getGroomingReq.UserID))
+		res, err := pc.petRepo.UpdateFinalGroomingStatus(int(getGroomingReq.PetID), userID)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't get grooming status"))
