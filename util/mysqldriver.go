@@ -2,12 +2,13 @@ package util
 
 import (
 	"fmt"
+	"petshop/config"
+	"petshop/entity"
+
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"petshop/config"
-	"petshop/entity"
 )
 
 func InitDB(config *config.AppConfig) *gorm.DB {
