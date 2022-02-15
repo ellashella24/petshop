@@ -207,13 +207,15 @@ func (sc *StoreController) ExportExcel() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		storeID, _ := strconv.Atoi(c.Param("id"))
 
+		email := middleware.ExtractTokenEmail(c)
+
 		transactionData, transactionDetailData, productData, err := sc.storeRepo.GetListTransactionByStoreID(storeID)
 
 		if err != nil {
 			return c.JSON(http.StatusNotFound, common.ErrorResponse(404, "transaction not found"))
 		}
 
-		err = service.ExportExcel(transactionData, transactionDetailData, productData)
+		err = service.ExportExcel(transactionData, transactionDetailData, productData, email)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, common.ErrorResponse(400, "Can't export Excel"))
