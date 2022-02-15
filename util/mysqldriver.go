@@ -34,6 +34,17 @@ func InitDB(config *config.AppConfig) *gorm.DB {
 }
 
 func InitMigrate(db *gorm.DB) {
+	db.Migrator().DropTable(&entity.TransactionDetail{})
+	db.Migrator().DropTable(&entity.Transaction{})
+	db.Migrator().DropTable(&entity.GroomingStatus{})
+	db.Migrator().DropTable(&entity.StockHistory{})
+	db.Migrator().DropTable(&entity.Cart{})
+	db.Migrator().DropTable(&entity.Product{})
+	db.Migrator().DropTable(&entity.Category{})
+	db.Migrator().DropTable(&entity.Store{})
+	db.Migrator().DropTable(&entity.Pet{})
+	db.Migrator().DropTable(&entity.User{})
+	db.Migrator().DropTable(&entity.City{})
 
 	db.AutoMigrate(&entity.City{})
 	db.AutoMigrate(&entity.User{})
