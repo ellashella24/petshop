@@ -1,6 +1,6 @@
 <div id="top"></div>
 
-[![Contributors](https://img.shields.io/github/contributors/ellashella24/petshop.svg?style=for-the-badge)](https://github.com/ellashella24/petshop/graphs/contributors)
+
 
 # Petshop
 
@@ -17,7 +17,7 @@
     <br />
     <a href="https://github.com/ellashella24/petshop"><strong>Explore the docs »</strong></a>
     <br />
-    <a href="https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj">Wireframe</a>
+    <a href="https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj">Wireflow</a>
     ·
     <a href="https://lucid.app/lucidchart/7a103c4c-9aac-44e1-896f-b9bca4a8dc34/edit?invitationId=inv_c1d4dfe4-840d-4ce2-80fb-18845710d049">Use Case</a>
     ·
@@ -28,6 +28,9 @@
     <a href="https://github.com/ellashella24/petshop/issues">Report Bug</a>
   </p>
 </div>
+<br />
+
+[![Contributors](https://img.shields.io/github/contributors/ellashella24/petshop.svg?style=for-the-badge)](https://github.com/ellashella24/petshop/graphs/contributors)
 
 <!-- TABLE OF CONTENTS -->
 # Table of Contents
@@ -35,8 +38,14 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
-        <li><a href="#descriptioN">Description</a></li>
-        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#description">Description</a></li>
+        <li><a href="#tech-stack">Tech Stack</a></li>
+          <ul>
+            <li><a href="#restful-api">RESTful API</a></li>
+            <li><a href="#deployment">Deployment</a></li>
+            <li><a href="#collaboration">Collaboration</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
     <li>
@@ -46,7 +55,7 @@
         <li><a href="#entity-relational-diagram">Entity Relational Diagram</a></li>
         <li><a href="#flowchart">Flowchart</a></li>
         <li><a href="#use-case">Use Case</a></li>
-        <li><a href="#wireframe">Wireframe</a></li>
+        <li><a href="#wireflow">Wireflow</a></li>
       </ul>
     </li>
     <li>
@@ -56,7 +65,6 @@
         <li><a href="#unit-test">Unit Test</a></li>
       </ul>
     </li>
-    <li><a href="#help">Help</a></li>
     <li><a href="#endpoint">Endpoints</a></li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -71,18 +79,26 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 ### Description
+- An app that allow user to be a pet shop owner to sell their services and products or to be a customer to buy them. 
+- Pet shop owners will be helped to market the products and services so that they can be easily reached by customers and they will be helped to get the products and services that are needed by their pets easily.
+- Build with Golang, Echo Framework, MySQL adn GORM for manage repository, Xuri Excelize for Export List Product Selling to Excel, FTP to store Image Product to server, Xendit API for Payment Gateway, Deploy the project on [Okteto](https://ellashella24.cloud.okteto.net).
 
-- A RESTful API App for Petshop. 
-- Allow user to be a pet shop owner to sell their services and products or to be a customer to buy them. 
-- With this app, pet shop owners will be helped to market the products and services so that they can be easily reached by customers and they will be helped to get the products and services that are needed by their pets easily.
-- Build with Golang, Echo Framework, MySQL adn GORM for manage repository, Xuri Excelize for Export List Product Selling to Excel, FTP to store Image Product to server, Xendit API for Payment Gateway, Deploy the project on Okteto (soon).
+## Tech Stack
+### RESTful-API
+- [Go](https://go.dev/)
+- [Echo Framework](https://echo.labstack.com/)
+- [MySQL](https://www.mysql.com/)
+- [GORM](https://gorm.io/index.html)
+- [Xuri Excelize](https://xuri.me/excelize/)
+- [Xendit](https://www.xendit.co/id/?utm_source=google&utm_medium=cpc&utm_campaign=BKWS-Exact-ID-ID&utm_content=payment-gateway&utm_term=xendit)
 
-### Built With
+### Deployment
+- [Docker](https://www.docker.com/)
+- [Kubernetes](https://kubernetes.io/)
 
-* [Go](https://go.dev/)
-* [Echo Framework](https://echo.labstack.com/)
-* [MySQL](https://www.mysql.com/)
-* [GORM](https://gorm.io/index.html)
+### Collaboration 
+- [Trello](https://trello.com/)
+- [Github](https://github.com/)
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -90,24 +106,24 @@
 ## Software Design
 ### High Level Architecture
 
-HLA design for this project can be seen in the picture below : 
+HLA design for this project shown in the picture below : 
 
-<a href="https://github.com/ellashella24/petshop">
-    <img src="images/HLA.jpeg" alt="Logo" width="800" height="462" >
-  </a>
+<p align = "center">
+<img src="images/HLA-rev-2.jpeg" alt="hla" width="800" height="462" >
+</p>
 
 ### Entity Relational Diagram
 
-ERD that used in this project can be seen in the following link : [ERD Petshop](https://lucid.app/lucidchart/1e35b3e5-1de0-40a7-ba26-db0e85763fda/edit?invitationId=inv_5eb6ec4e-9b6f-4db6-bb62-e18e2e922d95)
+Follow this link to see ERD for this project: [ERD Petshop](https://lucid.app/lucidchart/1e35b3e5-1de0-40a7-ba26-db0e85763fda/edit?invitationId=inv_5eb6ec4e-9b6f-4db6-bb62-e18e2e922d95)
 
 ### Flowchart
-Use case diargam for this project can be seen in the following link :  [Flowchart Petshop](https://lucid.app/lucidchart/8877930f-c2e0-4c85-b233-7c93dd82a306/edit?invitationId=inv_bccb8e74-b801-4419-ba8a-cc078d80f84a)
+Follow this link to see flowchart for this project :  [Flowchart Petshop](https://lucid.app/lucidchart/8877930f-c2e0-4c85-b233-7c93dd82a306/edit?invitationId=inv_bccb8e74-b801-4419-ba8a-cc078d80f84a)
 
 ### Use Case
-Use case diargam for this project can be seen in the following link : [Use Case Petshop](https://lucid.app/lucidchart/7a103c4c-9aac-44e1-896f-b9bca4a8dc34/edit?invitationId=inv_c1d4dfe4-840d-4ce2-80fb-18845710d049)
+Follow this link to see use case for this project : [Use Case Petshop](https://lucid.app/lucidchart/7a103c4c-9aac-44e1-896f-b9bca4a8dc34/edit?invitationId=inv_c1d4dfe4-840d-4ce2-80fb-18845710d049)
 
-### Wireframe
-Wireframe for this project can be seen in the following link : [Wireframe Petshop](https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj)
+### Wireflow
+Follow this link to see wireflow for this project : [Wireflow Petshop](https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -118,77 +134,51 @@ This project use Layered Architure to organized each components into spesific fu
 ### Structuring
   ```sh
     petshop
-    ├── config                
-    │     └──config.go           
-    ├── constants  
-    │     └──constants.go    
-    ├── delivery                 
-    │     └──common
-    │     │   ├── common.go           
+    ├── config                        
+    │     └──config.go                # Contains list of configuration of the project
+    ├── constants                     
+    │     └──constants.go             # Contains list constant variable
+    ├── delivery                      # Contains list of component for handle request dan response
+    │     └──common                   # Contains list of http request format based on the result from controller 
+    │     │   ├── common.go           # Contains list of http request format
     │     │   └── http_responses.go   
-    │     └──controller
+    │     └──controller               # Contains list of component that receive the request and return a response
     │     │   ├── user
-    │     │   ├── formatter_req.go    
-    │     │   ├── formatter_res.go    
-    │     │   ├── user_test.go       
-    │     │   └── users.go                    
+    │     │   ├── formatter_req.go    # Contains list of request format for each function on the controller
+    │     │   ├── formatter_res.go    # Contains list of response format for each function on the controller
+    │     │   ├── user_test.go        # Contains list of function for test each function on the controller
+    │     │   └── users.go            # Contains list of controller for each entity    
     │     └──routes  
-    │         └── routes.go           
-    ├── entity                
-    │     └── user.go          
-    ├── repository                  
-    │     ├── user_test.go    
-    │     └── users.go          
-    ├── service                 
-    │     └── ftp.go   
-    │     └── export-excel.go   
-    ├── utils                 
-    │     └── mysqldriver.go         
-    ├── .env                    
-    ├── .gitignore              
+    │         └── routes.go           # Contains list of route to access each function on controller  
+    ├── entity                        # Contains model all entity
+    │     └── user.go                 # Contains model for spesific entity
+    ├── repository                    # Contains list of functions that process the request and stores it in database
+    │     ├── user_test.go            # Contains list of function for test each function on the repository
+    │     └── users.go                # Contains list of repository for each entity
+    ├── service                       # Contains list of function to access other components outside the project
+    │     └── ftp.go                  # Containts list of function to manage files upload to the ftp
+    │     └── export-excel.go         # Containts list of function to stores response data into the excel files
+    ├── utils                         # Contains list of function to config each type of database
+    │     └── mysqldriver.go          # Contains list of function to config MySQL type database
+    ├── .env                          # Contains list of environment variable to run the project 
+    ├── .gitignore                    # Contains list of directory/file name that will igonored when push project
     ├── go.mod                  
     ├── go.sum                  
-    ├── main.go                 
+    ├── main.go                       # Contains list of component that need to be executed first to run the app
     └── README.md    
   ```
 
 ### Unit Test
-The following are the results of unit test coverage for this project shown in the image below
+Coverage result on all functions is 99.2% which the most functions have reached 100% coverage. Coverage result for each function shown in the picture below
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-## Help
-1. Config <br />
-    Contains list of configuration of the project
-2. Constants <br />
-    Contains list variable that used in other components
-3. Delivery <br />
-    Contains list of functions that receive the request and parse anything that is required from the request
-  - Common <br />
-    Contains list of request and response format 
-  - Controller <br />
-    Contains list of function to receive request and forward the request to other component, also receive and forward the response from other component
-  - Controller Unit Test <br />
-    Contains list of functions to test each function in controller
-  - Routes <br />
-    Contains list of link that use to access each endpoints 
-4. Entity <br />
-    Contains model for each table 
-5. Repository <br />
-    Contains list of functions that receive the request from controller and stores the data in database
-6. Service <br />
-    Contains list of function that require other components outside the project
-7. env <br />
-    Contains list of environment variable to run the project
-8. gitignore <br />
-    Contain list of directory / file name that not will not be pushed on github
-9. main.go <br />
-    Contains list of code that to be executed first to run the app
+<p align = "center">
+<img src="images/coverage-result-ver-2.jpg" alt="coverage-result">
+</p>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Endpoints
-List of endpoint in this project can be seen in the following link : [OpenAPI Petshop](https://app.swaggerhub.com/apis-docs/ellashella24/petshop/1.0.0)
+Follow this link to see the endpoints : [OpenAPI Petshop](https://app.swaggerhub.com/apis-docs/ellashella24/petshop/1.0.0)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -231,7 +221,7 @@ List of endpoint in this project can be seen in the following link : [OpenAPI Pe
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* [Layered Architecture](https://medium.com/swlh/developing-a-web-application-in-go-using-the-layered-architecture-8fc13209c808)
+* [Layered Architecture](https://github.com/jackthepanda96/docker-be5)
 * [Readme Template](https://github.com/othneildrew/Best-README-Template)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
