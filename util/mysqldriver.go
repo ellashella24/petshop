@@ -34,18 +34,6 @@ func InitDB(config *config.AppConfig) *gorm.DB {
 }
 
 func InitMigrate(db *gorm.DB) {
-	// db.Migrator().DropTable(&entity.TransactionDetail{})
-	// db.Migrator().DropTable(&entity.Transaction{})
-	// db.Migrator().DropTable(&entity.GroomingStatus{})
-	// db.Migrator().DropTable(&entity.StockHistory{})
-	// db.Migrator().DropTable(&entity.Cart{})
-	// db.Migrator().DropTable(&entity.Product{})
-	// db.Migrator().DropTable(&entity.Category{})
-	// db.Migrator().DropTable(&entity.Store{})
-	// db.Migrator().DropTable(&entity.Pet{})
-	// db.Migrator().DropTable(&entity.User{})
-	// db.Migrator().DropTable(&entity.City{})
-
 	db.AutoMigrate(&entity.City{})
 	db.AutoMigrate(&entity.User{})
 	db.AutoMigrate(&entity.Pet{})
@@ -94,40 +82,36 @@ func InitMigrate(db *gorm.DB) {
 		Name:    "Makanan",
 		Product: nil,
 	}
-	pet := entity.Pet{
-		Name:   "Kucing",
-		UserID: 2,
+	product1 := entity.Product{
+		Name:       "Shampoan",
+		Price:      10000,
+		StoreID:    1,
+		CategoryID: 1,
+		Category:   entity.Category{},
 	}
-	pet2 := entity.Pet{
-		Name:   "Kucing",
-		UserID: 2,
-	}
-	product := entity.Product{
+	product2 := entity.Product{
 		Name:       "Whiskas",
 		Price:      10000,
-		Stock:      10,
+		Stock:      100,
 		StoreID:    1,
 		CategoryID: 2,
 		Category:   entity.Category{},
 	}
-	product1 := entity.Product{
-		Name:       "Shampoan",
+	product3 := entity.Product{
+		Name:       "Excel",
 		Price:      10000,
-		StoreID:    2,
-		CategoryID: 1,
+		Stock:      100,
+		StoreID:    1,
+		CategoryID: 2,
 		Category:   entity.Category{},
 	}
 
 	db.Create(&city)
 	db.Create(&admin)
-	db.Create(&user)
 	db.Create(&store)
-	db.Create(&store1)
 	db.Create(&category)
 	db.Create(&category1)
-	db.Create(&pet)
-	db.Create(&pet2)
-	db.Create(&product)
 	db.Create(&product1)
-
+	db.Create(&product2)
+	db.Create(&product3)
 }
