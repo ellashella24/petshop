@@ -49,6 +49,7 @@ func (uc *ProductController) GetAllProduct() echo.HandlerFunc {
 					Name:     item.Name,
 					Price:    item.Price,
 					Stock:    item.Stock,
+					ImageUrl: item.ImageURL,
 					Category: item.Category.Name,
 				},
 			)
