@@ -1,9 +1,10 @@
 package service
 
 import (
-	mail "github.com/xhit/go-simple-mail/v2"
 	"log"
 	"petshop/constants"
+
+	mail "github.com/xhit/go-simple-mail/v2"
 )
 
 func SendMail(file, emailUser string) error {
@@ -22,7 +23,7 @@ func SendMail(file, emailUser string) error {
 	email := mail.NewMSG()
 	email.SetFrom(constants.CONFIG_SENDER_NAME)
 	email.AddTo(emailUser)
-	email.SetSubject("Data Transaksi Produk 1")
+	email.SetSubject("Data Transaksi Produk")
 	email.AddAttachment(file)
 
 	// Send email

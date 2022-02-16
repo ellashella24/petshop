@@ -102,7 +102,7 @@
 
 HLA design for this project shown in the picture below
 
-<img src="images/HLA-rev-2.jpeg" alt="hla" width="800" height="462" >
+<img src="images/HLA-rev-3.jpeg" alt="hla" width="800" height="462" >
 
 Follow this link to see the other software design : <a href="#other-software-design">Other Software Design</a>
 
