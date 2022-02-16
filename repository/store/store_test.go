@@ -117,24 +117,6 @@ func TestCreateStore(t *testing.T) {
 	})
 }
 
-func TestGetAllStoreByUserID(t *testing.T) {
-	storeRepo := NewStoreRepository(db)
-
-	t.Run("1. Success get all store by user", func(t *testing.T) {
-		res, err := storeRepo.GetAllStoreByUserID(1)
-
-		assert.Nil(t, err)
-		assert.Equal(t, "Store 1", res[0].Name)
-	})
-
-	t.Run("2. Error get store by user - user not found", func(t *testing.T) {
-		res, err := storeRepo.GetAllStoreByUserID(10000)
-
-		assert.NotNil(t, err)
-		assert.Equal(t, true, len(res) == 0)
-	})
-}
-
 func TestGetStoreProfile(t *testing.T) {
 	storeRepo := NewStoreRepository(db)
 
@@ -308,5 +290,34 @@ func TestDeleteStore(t *testing.T) {
 		_, err := storeRepo.DeleteStore(1000, 10000)
 
 		assert.NotNil(t, err)
+	})
+}
+
+func TestGetAllStore(t *testing.T) {
+	newStore := entity.Store{}
+	newStore.Name = "Store 1"
+	newStore.CityID = 1
+	newStore.UserID = 1
+
+	db.Create(&newStore)
+
+	storeRepo := NewStoreRepository(db)
+
+	t.Run("1. Success get all store by user", func(t *testing.T) {
+		res, err := storeRepo.GetAllStore()
+
+		assert.Nil(t, err)
+		assert.Equal(t, "Store 1", res[0].Name)
+	})
+
+	t.Run("2. Error get store by user - user not found", func(t *testing.T) {
+		store := entity.Store{}
+
+		db.Where("id = 2").Delete(&store)
+
+		res, err := storeRepo.GetAllStore()
+
+		assert.NotNil(t, err)
+		assert.Equal(t, true, len(res) == 0)
 	})
 }

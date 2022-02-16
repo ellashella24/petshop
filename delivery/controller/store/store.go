@@ -55,11 +55,9 @@ func (sc *StoreController) CreateStore() echo.HandlerFunc {
 	}
 }
 
-func (sc *StoreController) GetAllStoreByUser() echo.HandlerFunc {
+func (sc *StoreController) GetAllStore() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := middleware.ExtractTokenUserID(c)
-
-		res, err := sc.storeRepo.GetAllStoreByUserID(userID)
+		res, err := sc.storeRepo.GetAllStore()
 
 		if err != nil || len(res) == 0 {
 			return c.JSON(http.StatusNotFound, common.ErrorResponse(404, "Store not found"))

@@ -29,7 +29,7 @@ func RegisterPath(
 
 	// Store Route Path
 	eAuth.POST("/user/store", storeCtrl.CreateStore())
-	eAuth.GET("/user/stores", storeCtrl.GetAllStoreByUser())
+	eAuth.GET("/user/stores", storeCtrl.GetAllStore())
 	eAuth.GET("/user/store/profile/:id", storeCtrl.GetStoreProfile())
 	eAuth.PUT("/user/store/profile/:id", storeCtrl.UpdateStoreProfile())
 	eAuth.DELETE("/user/store/:id", storeCtrl.DeleteStore())
