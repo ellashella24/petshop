@@ -51,7 +51,15 @@ func ExportExcel(
 	file.SetCellStyle("Sheet1", "A1", "D1", styleHeader)
 
 	for i := 0; i < len(transactionData); i++ {
-		appendRow(file, i, transactionData, transactionDetailData, productData)
+		for j := 0; j < len(transactionDetailData); j++ {
+
+			if transactionData[i].ID == transactionDetailData[j].TransactionID {
+				appendRow(
+					file, j, transactionData[i].InvoiceID, productData[j].Name, fmt.Sprint(transactionData[i].PaidAt),
+					transactionDetailData[j].Quantity,
+				)
+			}
+		}
 	}
 
 	file.SetActiveSheet(activeSheet)
@@ -84,8 +92,7 @@ func ExportExcel(
 }
 
 func appendRow(
-	file *excelize.File, index int, transactionData []entity.Transaction,
-	transactionDetailData []entity.TransactionDetail, productData []entity.Product,
+	file *excelize.File, index int, invoiceID, productName, PaidAt string, quantity int,
 ) (fileWriter *excelize.File) {
 	rowCount := index + 2
 
@@ -108,10 +115,10 @@ func appendRow(
 		},
 	)
 
-	file.SetCellValue("Sheet1", fmt.Sprint("A", rowCount), fmt.Sprint(transactionData[index].InvoiceID))
-	file.SetCellValue("Sheet1", fmt.Sprint("B", rowCount), fmt.Sprint(productData[index].Name))
-	file.SetCellValue("Sheet1", fmt.Sprint("C", rowCount), fmt.Sprint(transactionDetailData[index].Quantity))
-	file.SetCellValue("Sheet1", fmt.Sprint("D", rowCount), fmt.Sprint(transactionData[index].PaidAt))
+	file.SetCellValue("Sheet1", fmt.Sprint("A", rowCount), invoiceID)
+	file.SetCellValue("Sheet1", fmt.Sprint("B", rowCount), productName)
+	file.SetCellValue("Sheet1", fmt.Sprint("C", rowCount), quantity)
+	file.SetCellValue("Sheet1", fmt.Sprint("D", rowCount), PaidAt)
 
 	file.SetCellStyle("Sheet1", fmt.Sprint("A", rowCount), fmt.Sprint("D", rowCount), styleContent)
 
