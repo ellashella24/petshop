@@ -180,7 +180,7 @@ func TestGetAllStoreByUser(t *testing.T) {
 		context.SetPath("/user/stores")
 
 		storeController := NewStoreController(mockFalseStoreRepository{})
-		err := (mw.IsAdmin)(storeController.GetAllStoreByUser())(context)
+		err := (mw.IsAdmin)(storeController.GetAllStore())(context)
 
 		if err != nil {
 			fmt.Println(err)
@@ -203,7 +203,7 @@ func TestGetAllStoreByUser(t *testing.T) {
 		context.SetPath("/cities")
 
 		storeController := NewStoreController(mockStoreRepository{})
-		err := (mw.IsAdmin)(storeController.GetAllStoreByUser())(context)
+		err := (mw.IsAdmin)(storeController.GetAllStore())(context)
 
 		if err != nil {
 			fmt.Println(err)
@@ -770,7 +770,7 @@ func (mu mockStoreRepository) FindCityByID(cityID int) (entity.City, error) {
 		ID: 1, Name: "city1"}, nil
 }
 
-func (mc mockStoreRepository) GetAllStoreByUserID(userID int) ([]entity.Store, error) {
+func (mc mockStoreRepository) GetAllStore() ([]entity.Store, error) {
 	return []entity.Store{
 		{ID: 1, Name: "store1", UserID: 1}}, nil
 }
@@ -826,7 +826,7 @@ func (mfc mockFalseStoreRepository) FindCityByID(cityID int) (entity.City, error
 		ID: 0, Name: ""}, nil
 }
 
-func (mfc mockFalseStoreRepository) GetAllStoreByUserID(userID int) ([]entity.Store, error) {
+func (mfc mockFalseStoreRepository) GetAllStore() ([]entity.Store, error) {
 	return []entity.Store{
 		{ID: 0, Name: "", UserID: 0}}, errors.New("can't get cities data")
 }

@@ -10,7 +10,7 @@ import (
 type Store interface {
 	FindCityByID(cityID int) (entity.City, error)
 	CreateStore(newStore entity.Store) (entity.Store, error)
-	GetAllStoreByUserID(userID int) ([]entity.Store, error)
+	GetAllStore() ([]entity.Store, error)
 	GetStoreProfile(storeID, userID int) (entity.Store, error)
 	UpdateStoreProfile(storeID, userID int, updatedStore entity.Store) (entity.Store, error)
 	DeleteStore(storeID, userID int) (entity.Store, error)
@@ -49,10 +49,10 @@ func (sr *storeRepository) CreateStore(newStore entity.Store) (entity.Store, err
 	return newStore, nil
 }
 
-func (sr *storeRepository) GetAllStoreByUserID(userID int) ([]entity.Store, error) {
+func (sr *storeRepository) GetAllStore() ([]entity.Store, error) {
 	stores := []entity.Store{}
 
-	err := sr.db.Where("user_id = ?", userID).Find(&stores).Error
+	err := sr.db.Find(&stores).Error
 
 	if err != nil || len(stores) == 0 {
 		return stores, errors.New("store not found")
