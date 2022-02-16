@@ -1,7 +1,5 @@
 <div id="top"></div>
 
-
-
 # Petshop
 
 <!-- PROJECT LOGO -->
@@ -12,11 +10,11 @@
 
   <h3 align="center">Petshop</h3>
 
+
   <p align="center">
     A RESTful API Application for Petshop
     <br />
-    <a href="https://github.com/ellashella24/petshop"><strong>Explore the docs »</strong></a>
-    <br />
+    <div id = "other-software-design"></div>
     <a href="https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj">Wireflow</a>
     ·
     <a href="https://lucid.app/lucidchart/7a103c4c-9aac-44e1-896f-b9bca4a8dc34/edit?invitationId=inv_c1d4dfe4-840d-4ce2-80fb-18845710d049">Use Case</a>
@@ -25,7 +23,7 @@
     ·
     <a href="https://lucid.app/lucidchart/1e35b3e5-1de0-40a7-ba26-db0e85763fda/edit?invitationId=inv_5eb6ec4e-9b6f-4db6-bb62-e18e2e922d95">ERD</a>
     ·
-    <a href="https://github.com/ellashella24/petshop/issues">Report Bug</a>
+    <a href="https://app.swaggerhub.com/apis-docs/ellashella24/petshop/1.0.0">Open API</a>
   </p>
 </div>
 <br />
@@ -39,23 +37,20 @@
       <a href="#about-the-project">About The Project</a>
       <ul>
         <li><a href="#description">Description</a></li>
-        <li><a href="#tech-stack">Tech Stack</a></li>
-          <ul>
-            <li><a href="#restful-api">RESTful API</a></li>
-            <li><a href="#deployment">Deployment</a></li>
-            <li><a href="#collaboration">Collaboration</a></li>
-          </ul>
-        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="#tech-stack">Tech Stack</a></li>
+      <ul>
+        <li><a href="#restful-api">RESTful API</a></li>
+        <li><a href="#deployment">Deployment</a></li>
+        <li><a href="#collaboration">Collaboration</a></li>
       </ul>
     </li>
     <li>
       <a href="#software-design">Software Design</a>
       <ul>
         <li><a href="#high-level-architecture">High Level Architecture</a></li>
-        <li><a href="#entity-relational-diagram">Entity Relational Diagram</a></li>
-        <li><a href="#flowchart">Flowchart</a></li>
-        <li><a href="#use-case">Use Case</a></li>
-        <li><a href="#wireflow">Wireflow</a></li>
       </ul>
     </li>
     <li>
@@ -65,7 +60,6 @@
         <li><a href="#unit-test">Unit Test</a></li>
       </ul>
     </li>
-    <li><a href="#endpoint">Endpoints</a></li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
@@ -106,24 +100,11 @@
 ## Software Design
 ### High Level Architecture
 
-HLA design for this project shown in the picture below : 
+HLA design for this project shown in the picture below
 
-<p align = "center">
 <img src="images/HLA-rev-2.jpeg" alt="hla" width="800" height="462" >
-</p>
 
-### Entity Relational Diagram
-
-Follow this link to see ERD for this project: [ERD Petshop](https://lucid.app/lucidchart/1e35b3e5-1de0-40a7-ba26-db0e85763fda/edit?invitationId=inv_5eb6ec4e-9b6f-4db6-bb62-e18e2e922d95)
-
-### Flowchart
-Follow this link to see flowchart for this project :  [Flowchart Petshop](https://lucid.app/lucidchart/8877930f-c2e0-4c85-b233-7c93dd82a306/edit?invitationId=inv_bccb8e74-b801-4419-ba8a-cc078d80f84a)
-
-### Use Case
-Follow this link to see use case for this project : [Use Case Petshop](https://lucid.app/lucidchart/7a103c4c-9aac-44e1-896f-b9bca4a8dc34/edit?invitationId=inv_c1d4dfe4-840d-4ce2-80fb-18845710d049)
-
-### Wireflow
-Follow this link to see wireflow for this project : [Wireflow Petshop](https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj)
+Follow this link to see the other software design : <a href="#other-software-design">Other Software Design</a>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -171,17 +152,9 @@ This project use Layered Architure to organized each components into spesific fu
 ### Unit Test
 Coverage result on all functions is 99.2% which the most functions have reached 100% coverage. Coverage result for each function shown in the picture below
 
-<p align = "center">
 <img src="images/coverage-result-ver-2.jpg" alt="coverage-result">
-</p>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-## Endpoints
-Follow this link to see the endpoints : [OpenAPI Petshop](https://app.swaggerhub.com/apis-docs/ellashella24/petshop/1.0.0)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -221,7 +194,7 @@ Follow this link to see the endpoints : [OpenAPI Petshop](https://app.swaggerhub
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* [Layered Architecture](https://github.com/jackthepanda96/docker-be5)
+* [Layered Architecture](https://medium.com/swlh/developing-a-web-application-in-go-using-the-layered-architecture-8fc13209c808)
 * [Readme Template](https://github.com/othneildrew/Best-README-Template)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
