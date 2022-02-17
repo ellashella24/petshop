@@ -47,6 +47,8 @@
 - Pet shop owners will be helped to market the products and services so that they can be easily reached by customers and they will be helped to get the products and services that are needed by their pets easily.
 - Build with Golang, Echo Framework, MySQL adn GORM for manage repository, Xuri Excelize for Export List Product Selling to Excel, FTP to store Image Product to server, Xendit API for Payment Gateway, Deploy the project on [Okteto](https://ellashella24.cloud.okteto.net).
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 # High Level Architecture
 
 HLA design for this project shown in the picture below
@@ -54,8 +56,6 @@ HLA design for this project shown in the picture below
 <img src="images/HLA-rev-3.jpeg" alt="hla" width="800" height="462" >
 
 <br />
-
-- Follow this link to see the other software design : <a href="#other-software-design">Other Software Design</a>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -75,7 +75,7 @@ HLA design for this project shown in the picture below
 - [Okteto](https://www.okteto.com/)
 - [Kubernetes](https://kubernetes.io/)
 
-Follow the link to see deployment flow of this projetct : [Deployment Flow](https://lucid.app/lucidchart/cc522f9a-b238-4ad7-a546-84c70486c3fb/edit?invitationId=inv_3f370427-82c1-4217-a866-056b0021a77c)
+Follow the link to see deployment flow of this project : [Deployment Flow](https://lucid.app/lucidchart/cc522f9a-b238-4ad7-a546-84c70486c3fb/edit?invitationId=inv_3f370427-82c1-4217-a866-056b0021a77c)
 
 ## Collaboration 
 - [Trello](https://trello.com/)
