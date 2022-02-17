@@ -59,7 +59,7 @@ HLA design for this project shown in the picture below
 
 ## Tech Stack
 ### RESTful-API
-- [Go](https://go.dev/) - Programming Language
+- [Go](https://go.dev/)
 - [Echo Framework](https://echo.labstack.com/) - Go Framework
 - [MySQL](https://www.mysql.com/) - SQL Database
 - [GORM](https://gorm.io/index.html) - ORM Library
