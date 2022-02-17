@@ -12,7 +12,7 @@
 
 
   <p align="center">
-    A RESTful API for Petshop App
+    An E-Commerce App for Pet Shop
     <br />
     <div id = "other-software-design"></div>
     <a href="https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj">Wireflow</a>
@@ -28,10 +28,8 @@
 </div>
 <br />
 
-[![Contributors](https://img.shields.io/github/contributors/ellashella24/petshop.svg?style=for-the-badge)](https://github.com/ellashella24/petshop/graphs/contributors)
-
 <!-- TABLE OF CONTENTS -->
-# Table of Contents
+## Table of Contents
 1. [About the Project](#about-the-project)
 2. [High Level Architecture](#high-level-architecture)
 3. [Tech Stack](#tech-stack)
@@ -42,14 +40,14 @@
 6. [Contact](#contact)
 
 <!-- ABOUT THE PROJECT -->
-# About The Project
+## About The Project
 - An app that allow user to be a pet shop owner to sell their services and products or to be a customer to buy them. 
 - Pet shop owners will be helped to market the products and services so that they can be easily reached by customers and they will be helped to get the products and services that are needed by their pets easily.
 - Build with Golang, Echo Framework, MySQL adn GORM for manage repository, Xuri Excelize for Export List Product Selling to Excel, FTP to store Image Product to server, Xendit API for Payment Gateway, Deploy the project on [Okteto](https://ellashella24.cloud.okteto.net).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-# High Level Architecture
+## High Level Architecture
 
 HLA design for this project shown in the picture below
 
@@ -59,34 +57,34 @@ HLA design for this project shown in the picture below
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-# Tech Stack
-## RESTful-API
-- [Go](https://go.dev/)
-- [Echo Framework](https://echo.labstack.com/)
-- [MySQL](https://www.mysql.com/)
-- [GORM](https://gorm.io/index.html)
-- [FTP](https://github.com/jlaffaye/ftp)
-- [SMTP](https://github.com/xhit/go-simple-mail)
-- [Xuri Excelize](https://xuri.me/excelize/)
-- [Xendit](https://www.xendit.co/id/?utm_source=google&utm_medium=cpc&utm_campaign=BKWS-Exact-ID-ID&utm_content=payment-gateway&utm_term=xendit)
+## Tech Stack
+### RESTful-API
+- [Go](https://go.dev/) - Programming Language
+- [Echo Framework](https://echo.labstack.com/) - Go Framework
+- [MySQL](https://www.mysql.com/) - SQL Database
+- [GORM](https://gorm.io/index.html) - ORM Library
+- [FTP](https://github.com/jlaffaye/ftp) - Upload File
+- [SMTP](https://github.com/xhit/go-simple-mail) - Send Email
+- [Xuri Excelize](https://xuri.me/excelize/) - Export Data to Excel Files
+- [Xendit](https://www.xendit.co/id/?utm_source=google&utm_medium=cpc&utm_campaign=BKWS-Exact-ID-ID&utm_content=payment-gateway&utm_term=xendit) - Payment Gateway
 
-## Deployment
-- [Docker](https://www.docker.com/)
-- [Okteto](https://www.okteto.com/)
-- [Kubernetes](https://kubernetes.io/)
+### Deployment
+- [Docker](https://www.docker.com/) - Container Images
+- [Okteto](https://www.okteto.com/) - Kubernetes Platform
+- [Kubernetes](https://kubernetes.io/) - Container 
 
 Follow the link to see deployment flow of this project : [Deployment Flow](https://lucid.app/lucidchart/cc522f9a-b238-4ad7-a546-84c70486c3fb/edit?invitationId=inv_3f370427-82c1-4217-a866-056b0021a77c)
 
-## Collaboration 
-- [Trello](https://trello.com/)
-- [Github](https://github.com/)
+### Collaboration 
+- [Trello](https://trello.com/) - Manage Project
+- [Github](https://github.com/) - Versioning Project
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-# Code Structure
+## Code Structure
 This project use Layered Architure to organized each components into spesific function  
 
-## Structuring
+### Structuring
   ```sh
     petshop
     ├── config                        
@@ -123,7 +121,7 @@ This project use Layered Architure to organized each components into spesific fu
     └── README.md    
   ```
 
-## Unit Test
+### Unit Test
 Coverage result on all functions is 99.2% which the most functions have reached 100% coverage. Coverage result for each function shown in the picture below
 
 <img src="images/coverage-result-ver-2.jpg" alt="coverage-result">
@@ -131,7 +129,7 @@ Coverage result on all functions is 99.2% which the most functions have reached 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CONTACT -->
-# Contact
+## Contact
 * Naufal Aammar Hibatullah - [Github](https://github.com/nflhibatullah) · [LinkedIn](https://www.linkedin.com/in/naufal-hibatullah-441a58222/)
 * Niendhitta Tamia Lassela - [Github](https://github.com/ellashella24) · [LinkedIn](https://www.linkedin.com/in/ntlassela/)
 
