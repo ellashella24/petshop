@@ -12,7 +12,7 @@
 
 
   <p align="center">
-    A RESTful API Application for Petshop
+    A RESTful API for Petshop App
     <br />
     <div id = "other-software-design"></div>
     <a href="https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj">Wireflow</a>
@@ -32,87 +32,61 @@
 
 <!-- TABLE OF CONTENTS -->
 # Table of Contents
-<ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#description">Description</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#tech-stack">Tech Stack</a></li>
-      <ul>
-        <li><a href="#restful-api">RESTful API</a></li>
-        <li><a href="#deployment">Deployment</a></li>
-        <li><a href="#collaboration">Collaboration</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#software-design">Software Design</a>
-      <ul>
-        <li><a href="#high-level-architecture">High Level Architecture</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#code-quality">Code Quality</a>
-      <ul>
-        <li><a href="#structuring">Structuring</a></li>
-        <li><a href="#unit-test">Unit Test</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#how-to-use">How To Use</a></li>
-      </ul>
-    </li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol> 
+1. [About the Project](#about-the-project)
+2. [High Level Architecture](#high-level-architecture)
+3. [Tech Stack](#tech-stack)
+4. [Code Structure](#code-structure)
+    - [Structuring](#structuring)
+    - [Unit Test](#unit-test)
+5. [How to Contrib](contribute.md)
+6. [Contact](#contact)
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
-### Description
+# About The Project
 - An app that allow user to be a pet shop owner to sell their services and products or to be a customer to buy them. 
 - Pet shop owners will be helped to market the products and services so that they can be easily reached by customers and they will be helped to get the products and services that are needed by their pets easily.
 - Build with Golang, Echo Framework, MySQL adn GORM for manage repository, Xuri Excelize for Export List Product Selling to Excel, FTP to store Image Product to server, Xendit API for Payment Gateway, Deploy the project on [Okteto](https://ellashella24.cloud.okteto.net).
 
-## Tech Stack
-### RESTful-API
-- [Go](https://go.dev/)
-- [Echo Framework](https://echo.labstack.com/)
-- [MySQL](https://www.mysql.com/)
-- [GORM](https://gorm.io/index.html)
-- [Xuri Excelize](https://xuri.me/excelize/)
-- [Xendit](https://www.xendit.co/id/?utm_source=google&utm_medium=cpc&utm_campaign=BKWS-Exact-ID-ID&utm_content=payment-gateway&utm_term=xendit)
-
-### Deployment
-- [Docker](https://www.docker.com/)
-- [Kubernetes](https://kubernetes.io/)
-
-### Collaboration 
-- [Trello](https://trello.com/)
-- [Github](https://github.com/)
-
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-## Software Design
-### High Level Architecture
+# High Level Architecture
 
 HLA design for this project shown in the picture below
 
 <img src="images/HLA-rev-3.jpeg" alt="hla" width="800" height="462" >
 
-Follow this link to see the other software design : <a href="#other-software-design">Other Software Design</a>
+<br />
+
+- Follow this link to see the other software design : <a href="#other-software-design">Other Software Design</a>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+# Tech Stack
+## RESTful-API
+- [Go](https://go.dev/)
+- [Echo Framework](https://echo.labstack.com/)
+- [MySQL](https://www.mysql.com/)
+- [GORM](https://gorm.io/index.html)
+- [FTP](https://github.com/jlaffaye/ftp)
+- [SMTP](https://github.com/xhit/go-simple-mail)
+- [Xuri Excelize](https://xuri.me/excelize/)
+- [Xendit](https://www.xendit.co/id/?utm_source=google&utm_medium=cpc&utm_campaign=BKWS-Exact-ID-ID&utm_content=payment-gateway&utm_term=xendit)
 
-## Code Quality
+## Deployment
+- [Docker](https://www.docker.com/)
+- [Okteto](https://www.okteto.com/)
+- [Kubernetes](https://kubernetes.io/)
+
+Follow the link to see deployment flow of this projetct : [Deployment Flow](https://lucid.app/lucidchart/cc522f9a-b238-4ad7-a546-84c70486c3fb/edit?invitationId=inv_3f370427-82c1-4217-a866-056b0021a77c)
+
+## Collaboration 
+- [Trello](https://trello.com/)
+- [Github](https://github.com/)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+# Code Structure
 This project use Layered Architure to organized each components into spesific function  
 
-### Structuring
+## Structuring
   ```sh
     petshop
     ├── config                        
@@ -149,52 +123,16 @@ This project use Layered Architure to organized each components into spesific fu
     └── README.md    
   ```
 
-### Unit Test
+## Unit Test
 Coverage result on all functions is 99.2% which the most functions have reached 100% coverage. Coverage result for each function shown in the picture below
 
 <img src="images/coverage-result-ver-2.jpg" alt="coverage-result">
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-<!-- GETTING STARTED -->
-## Getting Started
-
-### How To Use
-
-1. Clone the repo
-   ```sh
-   git clone https://github.com/ellashella24/petshop.git
-   ```
-
-2. Create .env file
-    ```go
-    PORT : "PORT_TO_ACCESS_YOUR_PROJECT"
-    ADDRESS : "YOUR_PROJECT_ADDRESS"
-    DRIVER : "mysql"
-    DB_NAME : "DATABASE_NAME"
-    DB_PORT : "YOUR_DATABASE_PORT"
-    DB_USERNAME : "YOUR_DATABASE_USERNAME"
-    DB_PASSWORD : "YOUR_DATABASE_PASSWORD"
-    ```
-
-3. Run the program
-    ```go
-    go run main.go
-    ```
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
 <!-- CONTACT -->
-## Contact
+# Contact
 * Naufal Aammar Hibatullah - [Github](https://github.com/nflhibatullah) · [LinkedIn](https://www.linkedin.com/in/naufal-hibatullah-441a58222/)
 * Niendhitta Tamia Lassela - [Github](https://github.com/ellashella24) · [LinkedIn](https://www.linkedin.com/in/ntlassela/)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* [Layered Architecture](https://medium.com/swlh/developing-a-web-application-in-go-using-the-layered-architecture-8fc13209c808)
-* [Readme Template](https://github.com/othneildrew/Best-README-Template)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
