@@ -15,13 +15,13 @@
     An E-Commerce App for Pet Shop
     <br />
     <div id = "other-software-design"></div>
-    <a href="https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj">Wireflow</a>
+    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/wireflow.png?raw=true"">Wireflow</a>
     ·
-    <a href="https://lucid.app/lucidchart/7a103c4c-9aac-44e1-896f-b9bca4a8dc34/edit?invitationId=inv_c1d4dfe4-840d-4ce2-80fb-18845710d049">Use Case</a>
+    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/usecase.jpeg">Use Case</a>
     ·
-    <a href="https://lucid.app/lucidchart/8877930f-c2e0-4c85-b233-7c93dd82a306/edit?invitationId=inv_bccb8e74-b801-4419-ba8a-cc078d80f84a">Flowchart</a>
+    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/flowchart.jpeg">Flowchart</a>
     ·
-    <a href="https://lucid.app/lucidchart/1e35b3e5-1de0-40a7-ba26-db0e85763fda/edit?invitationId=inv_5eb6ec4e-9b6f-4db6-bb62-e18e2e922d95">ERD</a>
+    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/erd.jpeg">ERD</a>
     ·
     <a href="https://app.swaggerhub.com/apis-docs/ellashella24/petshop/1.0.0">Open API</a>
   </p>
@@ -73,7 +73,7 @@ HLA design for this project shown in the picture below
 - [Okteto](https://www.okteto.com/) - Kubernetes Platform
 - [Kubernetes](https://kubernetes.io/) - Container 
 
-Follow the link to see deployment flow of this project : [Deployment Flow](https://lucid.app/lucidchart/cc522f9a-b238-4ad7-a546-84c70486c3fb/edit?invitationId=inv_3f370427-82c1-4217-a866-056b0021a77c)
+Follow the link to see deployment flow of this project : [Deployment Flow](https://github.com/ellashella24/petshop/blob/main/documentation/documentation/deployment-flow.jpeg)
 
 ### Collaboration 
 - [Trello](https://trello.com/) - Manage Project
