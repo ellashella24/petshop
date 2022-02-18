@@ -15,7 +15,7 @@
     An E-Commerce App for Pet Shop
     <br />
     <div id = "other-software-design"></div>
-    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/wireflow.png?raw=true">Wireflow</a>
+    <a href="https://whimsical.com/petshop-RtwdxfQTB8e72AY681qRBj">Wireflow</a>
     ·
     <a href="https://github.com/ellashella24/petshop/blob/main/documentation/usecase.jpeg?raw=true">Use Case</a>
     ·
