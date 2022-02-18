@@ -15,15 +15,15 @@
     An E-Commerce App for Pet Shop
     <br />
     <div id = "other-software-design"></div>
-    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/wireflow.png?raw=true"">Wireflow</a>
+    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/wireflow.png?raw=true">Wireflow</a>
     ·
-    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/usecase.jpeg">Use Case</a>
+    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/usecase.jpeg?raw=true">Use Case</a>
     ·
-    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/flowchart.jpeg">Flowchart</a>
+    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/flowchart.jpeg?raw=true">Flowchart</a>
     ·
-    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/erd.jpeg">ERD</a>
+    <a href="https://github.com/ellashella24/petshop/blob/main/documentation/erd.jpeg?raw=true">ERD</a>
     ·
-    <a href="https://app.swaggerhub.com/apis-docs/ellashella24/petshop/1.0.0">Open API</a>
+    <a href="https://app.swaggerhub.com/apis-docs/nflhibatullah/PetStore/1.0">Open API</a>
   </p>
 </div>
 <br />
@@ -71,9 +71,9 @@ HLA design for this project shown in the picture below
 ### Deployment
 - [Docker](https://www.docker.com/) - Container Images
 - [Okteto](https://www.okteto.com/) - Kubernetes Platform
-- [Kubernetes](https://kubernetes.io/) - Container 
+- [Kubernetes](https://kubernetes.io/) - Container Orchestration
 
-Follow the link to see deployment flow of this project : [Deployment Flow](https://github.com/ellashella24/petshop/blob/main/documentation/documentation/deployment-flow.jpeg)
+Follow the link to see deployment flow of this project : [Deployment Flow](https://github.com/ellashella24/petshop/blob/main/documentation/deployment-flow.jpeg?raw=true)
 
 ### Collaboration 
 - [Trello](https://trello.com/) - Manage Project
