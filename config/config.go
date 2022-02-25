@@ -4,16 +4,18 @@ import (
 	"os"
 	"sync"
 
+	"petshop/constants"
+
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 )
 
 type AppConfig struct {
-	Port     int
+	Port     string
 	Driver   string
 	Name     string
 	Address  string
-	DB_Port  int
+	DB_Port  string
 	Username string
 	Password string
 }
@@ -39,20 +41,25 @@ func initConfig() *AppConfig {
 	}
 
 	var defaultConfig AppConfig
-	defaultConfig.Port = 8000
-	defaultConfig.Driver = getEnv("DRIVER", "mysql")
-	defaultConfig.Name = getEnv("DB_NAME", "petshop")
-	defaultConfig.Address = getEnv("ADDRESS", "localhost")
-	defaultConfig.DB_Port = 3306
-	defaultConfig.Username = getEnv("DB_USERNAME", "root")
-	defaultConfig.Password = getEnv("DB_PASSWORD", "admin123")
+	defaultConfig.Port = os.Getenv("PORT")
+	defaultConfig.Driver = os.Getenv("DRIVER")
+	defaultConfig.Name = os.Getenv("DB_NAME")
+	defaultConfig.Address = os.Getenv("ADDRESS")
+	defaultConfig.DB_Port = os.Getenv("DB_PORT")
+	defaultConfig.Username = os.Getenv("DB_USERNAME")
+	defaultConfig.Password = os.Getenv("DB_PASSWORD")
+
+	constants.SecretKey = os.Getenv("SecretKey")
+	constants.CallbackToken = os.Getenv("CallbackToken")
+	constants.XendToken = os.Getenv("XendToken")
+	constants.FTP_ADDR = os.Getenv("FTP_ADDR")
+	constants.FTP_USERNAME = os.Getenv("FTP_USERNAME")
+	constants.FTP_PASSWORD = os.Getenv("FTP_PASSWORD")
+	constants.CONFIG_SMTP_HOST = os.Getenv("CONFIG_SMTP_HOST")
+	constants.CONFIG_SMTP_PORT = os.Getenv("CONFIG_SMTP_PORT")
+	constants.CONFIG_SENDER_NAME = os.Getenv("CONFIG_SENDER_NAME")
+	constants.CONFIG_AUTH_EMAIL = os.Getenv("CONFIG_AUTH_EMAIL")
+	constants.CONFIG_AUTH_PASSWORD = os.Getenv("CONFIG_AUTH_PASSWORD")
 
 	return &defaultConfig
-}
-
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
 }

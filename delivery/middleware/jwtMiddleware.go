@@ -3,7 +3,7 @@ package middleware
 import (
 	"errors"
 	"net/http"
-	"petshop/constant"
+	"petshop/constants"
 	"petshop/delivery/common"
 	"strings"
 	"time"
@@ -21,7 +21,7 @@ func GenerateToken(userID int, email string, role string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 
-	signedToken, err := token.SignedString([]byte(constant.SecretKey))
+	signedToken, err := token.SignedString([]byte(constants.SecretKey))
 
 	if err != nil {
 		return signedToken, err
@@ -47,7 +47,7 @@ func IsAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 				return nil, errors.New("invalid token")
 			}
 
-			return []byte(constant.SecretKey), nil
+			return []byte(constants.SecretKey), nil
 		})
 
 		claim, _ := token.Claims.(jwt.MapClaims)
@@ -81,7 +81,7 @@ func ExtractTokenUserID(c echo.Context) int {
 			return nil, errors.New("invalid token")
 		}
 
-		return []byte(constant.SecretKey), nil
+		return []byte(constants.SecretKey), nil
 	})
 
 	claim, ok := token.Claims.(jwt.MapClaims)
@@ -115,7 +115,7 @@ func ExtractTokenEmail(c echo.Context) string {
 			return nil, errors.New("invalid token")
 		}
 
-		return []byte(constant.SecretKey), nil
+		return []byte(constants.SecretKey), nil
 	})
 
 	claim, ok := token.Claims.(jwt.MapClaims)

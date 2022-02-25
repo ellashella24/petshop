@@ -1,7 +1,7 @@
 package route
 
 import (
-	"petshop/constant"
+	"petshop/constants"
 	"petshop/delivery/controller/cart"
 	"petshop/delivery/controller/category"
 	"petshop/delivery/controller/city"
@@ -23,7 +23,7 @@ func RegisterPath(
 ) {
 
 	eAuth := e.Group("")
-	eAuth.Use(middleware.JWT([]byte(constant.SecretKey)))
+	eAuth.Use(middleware.JWT([]byte(constants.SecretKey)))
 	eAuthAdmin := eAuth.Group("")
 	eAuthAdmin.Use(mw.IsAdmin)
 
